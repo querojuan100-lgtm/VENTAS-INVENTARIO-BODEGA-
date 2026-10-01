@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BodegaPro · Ventas y Almacén</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0f766e">
+<style>
+:root{--pri:#0f766e;--pri2:#115e59;--bg:#f1f5f9;--card:#fff;--tx:#0f172a;--mut:#64748b;--bd:#e2e8f0;--red:#dc2626;--amb:#d97706;--grn:#16a34a;--blu:#2563eb}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx)}
+button,input,select,textarea{font:inherit;color:inherit}
+#app{display:flex;min-height:100vh}
+#side{width:220px;background:#0b1f1e;color:#cbd5e1;padding:14px 10px;position:sticky;top:0;height:100vh;overflow:auto;flex-shrink:0}
+#side .logo{font-weight:800;font-size:18px;color:#fff;padding:6px 10px 14px}
+#side .logo small{display:block;font-weight:400;font-size:11px;color:#7dd3c8}
+#side a{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;color:inherit;text-decoration:none;cursor:pointer;margin-bottom:2px}
+#side a:hover{background:#12302e}
+#side a.on{background:var(--pri);color:#fff}
+#side .bd{margin-left:auto;background:var(--red);color:#fff;border-radius:99px;font-size:11px;padding:0 7px}
+main{flex:1;min-width:0;display:flex;flex-direction:column}
+#top{background:#fff;border-bottom:1px solid var(--bd);padding:8px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+#top .chip{background:#f0fdfa;border:1px solid #99f6e4;border-radius:8px;padding:3px 9px;font-size:13px}
+#top .sp{flex:1}
+#view{padding:16px;flex:1}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
+.card h3{margin:0 0 10px;font-size:15px}
+h2{margin:0 0 12px;font-size:20px}
+.btn{border:1px solid var(--bd);background:#fff;border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#f8fafc}
+.btn.pri{background:var(--pri);border-color:var(--pri);color:#fff}.btn.pri:hover{background:var(--pri2)}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+.btn.sm{padding:3px 8px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+input,select,textarea{border:1px solid #cbd5e1;border-radius:8px;padding:7px 9px;background:#fff;max-width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid #5eead4;border-color:var(--pri)}
+input.big{width:100%;font-size:18px;padding:12px}
+label{display:block;font-size:12px;color:var(--mut);margin-bottom:2px}
+.f{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:10px}
+.f>div>input,.f>div>select,.f>div>textarea{width:100%}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.row.sb{justify-content:space-between}
+table{width:100%;border-collapse:collapse}
+th,td{padding:7px 8px;text-align:left;border-bottom:1px solid var(--bd);vertical-align:middle}
+th{font-size:11px;text-transform:uppercase;color:var(--mut);letter-spacing:.04em;background:#f8fafc;position:sticky;top:0}
+td.r,th.r{text-align:right}
+.tw{overflow:auto;max-height:68vh}
+.tabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
+.tabs button{border:0;background:#e2e8f0;padding:7px 14px;border-radius:8px;cursor:pointer}
+.tabs button.on{background:var(--pri);color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px}
+.kpi{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:12px}
+.kpi .l{font-size:12px;color:var(--mut)}.kpi .v{font-size:22px;font-weight:700}.kpi .s{font-size:12px;color:var(--mut)}
+.badge{display:inline-block;border-radius:99px;padding:1px 8px;font-size:11px;font-weight:600}
+.b-r{background:#fee2e2;color:#991b1b}.b-a{background:#fef3c7;color:#92400e}.b-g{background:#dcfce7;color:#166534}.b-b{background:#dbeafe;color:#1e40af}.b-n{background:#e2e8f0;color:#334155}
+small{color:var(--mut)}
+.mut{color:var(--mut)}
+.pos{display:grid;grid-template-columns:1fr 420px;gap:14px;align-items:start}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.pc{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:10px;cursor:pointer;text-align:left}
+.pc:hover{border-color:var(--pri);box-shadow:0 2px 8px #0001}
+.pc .n{font-weight:600;min-height:38px}.pc .p{font-weight:700;color:var(--pri)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chips button{border:1px solid var(--bd);background:#fff;border-radius:99px;padding:3px 12px;cursor:pointer}
+.chips button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.cartl{display:grid;grid-template-columns:1fr auto;gap:4px 8px;padding:8px 0;border-bottom:1px solid var(--bd)}
+.cartl input[type=number]{width:80px}
+.tot{font-size:26px;font-weight:800;color:var(--pri)}
+.tl{display:flex;justify-content:space-between;padding:2px 0}
+#modal{display:none;position:fixed;inset:0;background:#0008;z-index:50;align-items:flex-start;justify-content:center;overflow:auto;padding:30px 10px}
+#modal.open{display:flex}
+.mbox{background:#fff;border-radius:14px;padding:18px;width:100%;max-width:560px}
+.mbox.wide{max-width:980px}
+.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+#toast{position:fixed;bottom:16px;right:16px;z-index:99;display:flex;flex-direction:column;gap:6px}
+#toast div{background:#0f172a;color:#fff;padding:9px 14px;border-radius:8px;box-shadow:0 4px 14px #0004}
+#toast div.err{background:var(--red)}#toast div.ok{background:var(--grn)}
+.tk{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;width:300px;margin:0 auto;color:#000;background:#fff}
+.tk .c{text-align:center}.tk hr{border:0;border-top:1px dashed #000;margin:6px 0}
+.tk .l{display:flex;justify-content:space-between;gap:6px}
+#printArea{display:none}
+.bars{display:flex;gap:10px;align-items:flex-end;height:150px;padding-top:10px}
+.bars div{flex:1;text-align:center;font-size:11px}
+.bars i{display:block;background:var(--pri);border-radius:5px 5px 0 0;min-height:2px}
+.cat-head{background:linear-gradient(135deg,#0f766e,#14b8a6);color:#fff;border-radius:14px;padding:18px;margin-bottom:14px}
+.catbar{position:fixed;left:0;right:0;bottom:0;background:#0f172a;color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;z-index:30}
+body.catmode #side,body.catmode #top{display:none}
+body.catmode #view{max-width:1100px;margin:0 auto;width:100%;padding-bottom:80px}
+.den{display:grid;grid-template-columns:auto 80px;gap:4px 10px;align-items:center}
+.den input{width:80px}
+.ok{color:var(--grn)}.bad{color:var(--red)}
+@media(max-width:900px){
+ #app{flex-direction:column}
+ #side{width:100%;height:auto;position:sticky;top:0;z-index:30;display:flex;gap:4px;overflow-x:auto;padding:6px}
+ #side .logo{display:none}#side a{white-space:nowrap;margin:0}
+ #top{position:static}
+ .pos{grid-template-columns:1fr}
+}
+@media print{
+ body>*:not(#printArea){display:none!important}
+ #printArea{display:block!important}
+ body{background:#fff}
+ .tk{width:100%}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="side"></aside>
+  <main><header id="top"></header><section id="view"></section></main>
+</div>
+<div id="modal"></div>
+<div id="toast"></div>
+<div id="printArea"></div>
+
+<script>
+/* ============================================================
+   BodegaPro – Ventas y Almacén (Venezuela)
+   Datos 100% locales (localStorage) · funciona sin internet · PWA
+   ============================================================ */
+const LS='bodegapro.v1';
+let S=null;
+const ui={inv:'prod',comp:'compras',q:'',cat:'',invq:'',repFrom:'',repTo:'',catCart:{},catq:'',catc:''};
+
+/* ---------- utilidades ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+const val=id=>{const e=document.getElementById(id);return e?e.value:''};
+const num=id=>parseFloat(val(id))||0;
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const r2=n=>Math.round((n+Number.EPSILON)*100)/100;
+const r3=n=>Math.round(n*1000)/1000;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=(n,d=2)=>Number(n||0).toLocaleString('es-VE',{minimumFractionDigits:d,maximumFractionDigits:d});
+const sym={USD:'$',EUR:'€',VES:'Bs'};
+const money=(n,c)=>sym[c]+' '+fmt(n);
+const ymd=iso=>{const d=new Date(iso);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const today=()=>ymd(new Date().toISOString());
+const addDays=(s,n)=>{const d=new Date(s+'T12:00');d.setDate(d.getDate()+n);return ymd(d.toISOString())};
+const daysTo=s=>Math.round((new Date(s+'T00:00')-new Date(today()+'T00:00'))/864e5);
+const dt=iso=>new Date(iso).toLocaleString('es-VE',{dateStyle:'short',timeStyle:'short'});
+const save=()=>{try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){toast('Error guardando datos (almacenamiento lleno)','err')}};
+function toast(m,t){const d=document.createElement('div');d.textContent=m;if(t)d.className=t;$('#toast').appendChild(d);setTimeout(()=>d.remove(),3500)}
+function modal(h,wide){const m=$('#modal');m.innerHTML=`<div class="mbox ${wide?'wide':''}">${h}</div>`;m.classList.add('open')}
+function closeModal(){const m=$('#modal');m.classList.remove('open');m.innerHTML=''}
+function dl(name,text,type='text/plain'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
+const csv=rows=>rows.map(r=>r.map(c=>'"'+String(c??'').replace(/"/g,'""')+'"').join(';')).join('\n');
+function printHTML(h){$('#printArea').innerHTML=h;window.print()}
+function phone(p){p=String(p||'').replace(/\D/g,'');if(p.startsWith('0'))p='58'+p.slice(1);return p}
+function wa(p,t){window.open('https://wa.me/'+phone(p)+'?text='+encodeURIComponent(t),'_blank')}
+
+/* ---------- moneda ---------- */
+// USD que vale 1 unidad de la moneda c
+const rate=c=>c==='USD'?1:c==='EUR'?S.cfg.tasaEUR/S.cfg.tasaUSD:1/S.cfg.tasaUSD;
+const toUSD=(m,c)=>m*rate(c);
+const fromUSD=(u,c)=>u/rate(c);
+const dual=u=>{const r=S.cfg.ref;return `<b>${money(fromUSD(u,r),r)}</b> <small>${money(fromUSD(u,'VES'),'VES')}</small>`};
+const dualT=u=>{const r=S.cfg.ref;return `${money(fromUSD(u,r),r)} / ${money(fromUSD(u,'VES'),'VES')}`};
+function setTasa(usd,eur,fuente){
+  S.cfg.tasaUSD=usd;S.cfg.tasaEUR=eur;
+  S.cfg.hist.unshift({f:new Date().toISOString(),usd,eur,fuente});S.cfg.hist=S.cfg.hist.slice(0,30);
+  S.cfg.tasaFecha=new Date().toISOString();save();render();
+}
+async function syncBCV(silent){
+  const get=async u=>{const c=new AbortController();const t=setTimeout(()=>c.abort(),8000);try{const r=await fetch(u,{signal:c.signal});if(!r.ok)throw 0;return await r.json()}finally{clearTimeout(t)}};
+  try{
+    const a=await get('https://ve.dolarapi.com/v1/dolares/oficial');
+    let e=null;try{e=await get('https://ve.dolarapi.com/v1/euros/oficial')}catch(_){}
+    const u=a.promedio||a.venta||a.compra;if(!u)throw 0;
+    const eu=e&&(e.promedio||e.venta||e.compra)||S.cfg.tasaEUR;
+    setTasa(r2(u),r2(eu),'BCV (automática)');toast('Tasa BCV actualizada: Bs '+fmt(u),'ok');
+  }catch(err){if(!silent)toast('No se pudo sincronizar (sin internet). Ingresa la tasa manualmente en Configuración.','err')}
+}
+
+/* ---------- datos ---------- */
+const prod=id=>S.productos.find(p=>p.id===id);
+const tot=p=>r3((p.stk.ALM||0)+(p.stk.EXH||0));
+const saldo=cid=>r2(S.cxc.filter(m=>m.cid===cid).reduce((a,m)=>a+(m.tipo==='cargo'?m.usd:-m.usd),0));
+const ivaRate=p=>p.iva==='G'?S.cfg.iva/100:0;
+const pvp=p=>p.precio*(1+ivaRate(p));
+const depName={ALM:'Almacén',EXH:'Exhibición'};
+
+function mover(pid,tipo,cant,dep,motivo,ref){
+  const p=prod(pid);p.stk[dep]=r3((p.stk[dep]||0)+cant);
+  S.kardex.push({id:uid(),f:new Date().toISOString(),pid,tipo,dep,cant,saldo:tot(p),motivo,ref:ref||''});
+}
+function salidaVenta(pid,q,ref){
+  const p=prod(pid);let r=q;const e=Math.min(p.stk.EXH||0,r);
+  if(e>1e-9){mover(pid,'SALIDA',-e,'EXH','Venta',ref);r-=e}
+  if(r>1e-9)mover(pid,'SALIDA',-r,'ALM','Venta (desde almacén)',ref);
+}
+function alerts(){
+  const low=S.productos.filter(p=>tot(p)<=p.min);
+  const exp=S.productos.filter(p=>p.vence&&tot(p)>0&&daysTo(p.vence)<=30).sort((a,b)=>a.vence.localeCompare(b.vence));
+  return{low,exp};
+}
+function notifyAlerts(){
+  if(!('Notification' in window)||Notification.permission!=='granted')return;
+  const a=alerts();if(a.low.length||a.exp.length)new Notification('BodegaPro – Alertas',{body:`${a.low.length} productos con stock mínimo · ${a.exp.length} por vencer`,icon:'/icon.svg'});
+}
+function askNotif(){if(!('Notification' in window))return toast('Tu navegador no soporta notificaciones','err');Notification.requestPermission().then(p=>{toast(p==='granted'?'Notificaciones activadas':'Permiso denegado',p==='granted'?'ok':'err');if(p==='granted')notifyAlerts()})}
+
+function seed(){
+  const d=n=>addDays(today(),n);
+  const P=(codigo,nombre,cat,unidad,frac,costo,margen,iva,alm,exh,min,vence,ubic,pres)=>({id:uid(),codigo,nombre,cat,unidad,frac,costo,margen,precio:r2(costo*(1+margen/100)),iva,stk:{ALM:0,EXH:0},_a:alm,_e:exh,min,vence,ubic,pres:pres||[]});
+  const ps=[
+    P('7591000000011','Harina de maíz precocida 1kg','Víveres','UND',false,0.85,25,'E',200,40,30,'','A1',[{n:'Bulto x20',f:20,codigo:''}]),
+    P('7591000000028','Arroz blanco 1kg','Víveres','UND',false,0.95,25,'E',150,30,30,'','A1',[{n:'Bulto x24',f:24,codigo:''}]),
+    P('7591000000035','Azúcar 1kg','Víveres','UND',false,1.10,22,'E',100,25,20,'','A2',[]),
+    P('7591000000042','Aceite vegetal 1L','Víveres','UND',false,2.40,20,'G',60,12,15,d(200),'A2',[{n:'Caja x12',f:12,codigo:''}]),
+    P('7591000000059','Refresco cola 2L','Bebidas','UND',false,1.20,35,'G',120,24,24,d(90),'B1',[{n:'Caja x6',f:6,codigo:''}]),
+    P('7591000000066','Jabón de baño','Higiene','UND',false,0.60,45,'G',80,20,20,'','C1',[]),
+    P('2000000000011','Queso blanco duro (por kg)','Charcutería','KG',true,6.50,30,'E',20,8,6,d(12),'F1',[]),
+    P('2000000000028','Jamón de espalda (por kg)','Charcutería','KG',true,7.00,35,'G',12,5,4,d(5),'F1',[]),
+    P('7591000000073','Leche entera 1L','Lácteos','UND',false,1.50,20,'E',90,18,24,d(20),'F2',[{n:'Caja x12',f:12,codigo:''}]),
+    P('7591000000080','Café molido 500g','Víveres','UND',false,3.20,28,'E',40,10,10,'','A3',[]),
+    P('7591000000097','Detergente en polvo 1kg','Limpieza','UND',false,2.80,30,'G',30,8,10,'','C2',[]),
+    P('7591000000103','Papel higiénico 4 rollos','Higiene','UND',false,1.80,40,'G',4,2,10,'','C1',[])
+  ];
+  const mk=(n,cur,ef,igtf,aj)=>({id:uid(),n,cur,ef,igtf,aj,on:true});
+  S={
+    cfg:{empresa:'Mi Bodega C.A.',rif:'J-12345678-0',dir:'Av. Principal, Local 1, Caracas',tel:'0412-0000000',whatsapp:'584120000000',
+      tasaUSD:36.50,tasaEUR:39.80,ref:'USD',iva:16,igtf:3,impresion:'termica',nroVenta:0,nroCaja:0,nroPedido:0,nroCompra:0,hist:[],tasaFecha:null,
+      metodos:[mk('Efectivo USD','USD',true,true,0),mk('Efectivo EUR','EUR',true,true,0),mk('Zelle','USD',false,true,0),mk('Efectivo Bs','VES',true,false,0),mk('Pago Móvil','VES',false,false,0),mk('Punto de venta','VES',false,false,0),mk('Transferencia Bs','VES',false,false,0)]},
+    productos:ps,kardex:[],
+    ubic:[{id:'ALM',nombre:'Almacén principal',tipo:'Depósito'},{id:'EXH',nombre:'Bodega / Exhibición',tipo:'Depósito'},
+      {id:'A1',nombre:'Pasillo 1 · Estante A',tipo:'Estante'},{id:'A2',nombre:'Pasillo 1 · Estante B',tipo:'Estante'},{id:'A3',nombre:'Pasillo 1 · Estante C',tipo:'Estante'},
+      {id:'B1',nombre:'Pasillo 2 · Bebidas',tipo:'Estante'},{id:'C1',nombre:'Pasillo 3 · Higiene',tipo:'Estante'},{id:'C2',nombre:'Pasillo 3 · Limpieza',tipo:'Estante'},
+      {id:'F1',nombre:'Nevera 1 · Charcutería',tipo:'Refrigerado'},{id:'F2',nombre:'Nevera 2 · Lácteos',tipo:'Refrigerado'}],
+    clientes:[{id:'CF',nombre:'Consumidor final',rif:'',tel:'',email:'',limite:0},
+      {id:'c1',nombre:'Juan Pérez',rif:'V-12345678',tel:'0414-1112233',email:'juan@correo.com',limite:50},
+      {id:'c2',nombre:'María Gómez',rif:'V-87654321',tel:'0424-5556677',email:'',limite:100}],
+    cxc:[],proveedores:[{id:'p1',nombre:'Distribuidora Andina C.A.',rif:'J-30111222-3',tel:'0212-5551111'},{id:'p2',nombre:'Alimentos del Centro C.A.',rif:'J-30333444-5',tel:'0243-5552222'}],
+    compras:[],ventas:[],caja:null,cierres:[],pedidos:[],cart:[],cartCli:'CF'
+  };
+  S.cxc.push({id:uid(),cid:'c1',f:new Date(Date.now()-5*864e5).toISOString(),tipo:'cargo',usd:20,tasa:36.5,nota:'Compra a crédito inicial',ref:''});
+  ps.forEach(p=>{const a=p._a,e=p._e;delete p._a;delete p._e;if(a)mover(p.id,'ENTRADA',a,'ALM','Inventario inicial');if(e)mover(p.id,'ENTRADA',e,'EXH','Inventario inicial')});
+  save();
+}
+function load(){try{S=JSON.parse(localStorage.getItem(LS))}catch(e){S=null}if(!S)seed();S.cart=(S.cart||[]).filter(l=>prod(l.pid))}
+
+/* ---------- navegación ---------- */
+const NAV=[['dash','📊','Dashboard'],['pos','🛒','Punto de venta'],['inv','📦','Inventario'],['caja','💵','Caja y tesorería'],['cxc','🧾','Cuentas por cobrar'],['comp','🚚','Compras / CxP'],['rep','📈','Reportes'],['cat','🛍️','Catálogo digital'],['ped','📲','Pedidos online'],['cfg','⚙️','Configuración']];
+const VIEWS={dash:vDash,pos:vPOS,inv:vInv,caja:vCaja,cxc:vCxC,comp:vComp,rep:vRep,cat:vCat,ped:vPed,cfg:vCfg};
+const curView=()=>{const h=location.hash.replace('#','');return h==='catalogo'?'cat':(VIEWS[h]?h:'dash')};
+function go(v){location.hash=v==='cat'?'catalogo':v}
+window.addEventListener('hashchange',()=>{closeModal();render()});
+function render(){
+  const v=curView();document.body.classList.toggle('catmode',location.hash==='#catalogo');
+  const al=alerts();const nb=al.low.length+al.exp.length;
+  $('#side').innerHTML=`<div class="logo">📦 BodegaPro<small>Ventas y Almacén · VE</small></div>`+NAV.map(([k,i,n])=>`<a class="${k===v?'on':''}" onclick="go('${k}')">${i} ${n}${k==='inv'&&nb?`<span class="bd">${nb}</span>`:''}${k==='ped'&&S.pedidos.filter(p=>p.estado==='nuevo').length?`<span class="bd">${S.pedidos.filter(p=>p.estado==='nuevo').length}</span>`:''}</a>`).join('');
+  const c=S.cfg;
+  $('#top').innerHTML=`<span class="chip">USD <b>Bs ${fmt(c.tasaUSD)}</b></span><span class="chip">EUR <b>Bs ${fmt(c.tasaEUR)}</b></span>
+   <button class="btn sm" onclick="syncBCV()" title="Sincronizar tasa oficial BCV">⟳ BCV</button>
+   <small>${c.tasaFecha?'Act. '+dt(c.tasaFecha):'Tasa manual'}</small><span class="sp"></span>
+   <label style="margin:0">Referencia</label><select onchange="S.cfg.ref=this.value;save();render()"><option value="USD" ${c.ref==='USD'?'selected':''}>USD $</option><option value="EUR" ${c.ref==='EUR'?'selected':''}>EUR €</option></select>
+   <span class="chip">${S.caja?'🟢 Caja abierta':'🔴 Caja cerrada'}</span><span class="chip">${navigator.onLine?'🌐 En línea':'📴 Sin conexión'}</span>`;
+  VIEWS[v]();
+}
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+function utilidad(v,repos){
+  let u=0;v.items.forEach(it=>{const p=prod(it.pid);const c=repos&&p?p.costo*it.f:it.costoU;u+=it.base-c*it.cant});
+  return u-(v.ajusteUSD||0);
+}
+function vDash(){
+  const hoy=today();const vs=S.ventas.filter(v=>!v.anulada&&ymd(v.f)===hoy);
+  const t=vs.reduce((a,v)=>a+v.totalUSD,0),ut=vs.reduce((a,v)=>a+utilidad(v,true),0);
+  const al=alerts();const cxc=S.clientes.reduce((a,c)=>a+saldo(c.id),0);
+  const cp=S.compras.filter(c=>c.cred&&c.cred.monto-c.cred.pagado>0.005);const cxp=cp.reduce((a,c)=>a+c.cred.monto-c.cred.pagado,0);
+  const venc=cp.filter(c=>c.cred.venc<hoy).length;
+  const inv=S.productos.reduce((a,p)=>a+tot(p)*p.costo,0);
+  $('#view').innerHTML=`<h2>Dashboard</h2>
+  <div class="kpis">
+   <div class="kpi"><div class="l">Ventas de hoy (${vs.length} facturas)</div><div class="v">${dual(t)}</div></div>
+   <div class="kpi"><div class="l">Ganancia real hoy (costo de reposición)</div><div class="v">${dual(ut)}</div><div class="s">Medida en divisa: sin distorsión inflacionaria</div></div>
+   <div class="kpi"><div class="l">Valor del inventario (a costo)</div><div class="v">${dual(inv)}</div></div>
+   <div class="kpi"><div class="l">Por cobrar (fiado)</div><div class="v">${dual(cxc)}</div></div>
+   <div class="kpi"><div class="l">Por pagar a proveedores</div><div class="v">${dual(cxp)}</div><div class="s">${venc?`<span class="bad">${venc} vencida(s)</span>`:'Sin vencidas'}</div></div>
+   <div class="kpi"><div class="l">Caja</div><div class="v">${S.caja?'Abierta':'Cerrada'}</div><div class="s">${S.caja?'Desde '+dt(S.caja.apertura):'Abre caja para vender'}</div></div>
+  </div>
+  <div class="row"><button class="btn pri" onclick="go('pos')">🛒 Ir a vender</button><button class="btn" onclick="go('inv')">📦 Inventario</button><button class="btn" onclick="go('comp')">🚚 Registrar compra</button><button class="btn" onclick="askNotif()">🔔 Activar notificaciones de alertas</button></div>
+  <div class="pos" style="grid-template-columns:1fr 1fr">
+   <div class="card"><h3>⚠️ Stock mínimo (${al.low.length})</h3>${al.low.length?`<table>${al.low.map(p=>`<tr><td>${esc(p.nombre)}</td><td class="r"><span class="badge b-r">${tot(p)} / mín ${p.min}</span></td></tr>`).join('')}</table>`:'<small>Todo en orden.</small>'}</div>
+   <div class="card"><h3>⏳ Por vencer / vencidos (${al.exp.length})</h3>${al.exp.length?`<table>${al.exp.map(p=>{const d=daysTo(p.vence);return`<tr><td>${esc(p.nombre)}</td><td class="r"><span class="badge ${d<0?'b-r':d<=7?'b-a':'b-b'}">${d<0?'Vencido':d+' días'} · ${p.vence}</span></td></tr>`}).join('')}</table>`:'<small>Sin productos próximos a vencer.</small>'}</div>
+  </div>
+  <div class="card"><h3>Historial de tasa</h3><small>${S.cfg.hist.length?S.cfg.hist.slice(0,5).map(h=>`${dt(h.f)}: USD ${fmt(h.usd)} · EUR ${fmt(h.eur)} (${h.fuente})`).join('<br>'):'Sin cambios registrados todavía.'}</small></div>`;
+}
+
+/* ============================================================
+   PUNTO DE VENTA
+   ============================================================ */
+function findCode(c){
+  c=c.trim();if(!c)return null;
+  for(const p of S.productos){if(p.codigo===c)return{p,pi:-1};const i=p.pres.findIndex(x=>x.codigo&&x.codigo===c);if(i>=0)return{p,pi:i}}
+  return null;
+}
+function cartCalc(){
+  let sub=0,iva=0;
+  const lines=S.cart.map(l=>{const p=prod(l.pid);const f=l.pi>=0?p.pres[l.pi].f:1;const base=p.precio*f*l.cant;const iv=base*ivaRate(p);sub+=base;iva+=iv;
+    return{...l,p,f,base,iv,tot:base+iv,unit:p.precio*f*(1+ivaRate(p)),pn:l.pi>=0?p.pres[l.pi].n:p.unidad}});
+  return{lines,sub,iva,total:sub+iva};
+}
+function addCart(pid,pi=-1,q=1){
+  const p=prod(pid);const f=pi>=0?p.pres[pi].f:1;
+  const l=S.cart.find(x=>x.pid===pid&&x.pi===pi);const nq=(l?l.cant:0)+q;
+  if(nq*f>tot(p)+1e-9){toast(`Stock insuficiente de "${p.nombre}" (disp. ${tot(p)})`,'err');return}
+  if(l)l.cant=r3(nq);else S.cart.push({pid,pi,cant:q});
+  save();renderCart();
+}
+function setQty(i,v){
+  v=parseFloat(v);const l=S.cart[i];const p=prod(l.pid);const f=l.pi>=0?p.pres[l.pi].f:1;
+  if(!(v>0)){S.cart.splice(i,1)}else{if(!p.frac)v=Math.round(v);if(v*f>tot(p)+1e-9){toast('Stock insuficiente (disp. '+tot(p)+')','err');v=Math.floor(tot(p)/f*1000)/1000}l.cant=v}
+  save();renderCart();
+}
+function setPres(i,pi){S.cart[i].pi=parseInt(pi);const l=S.cart[i];const p=prod(l.pid);const f=l.pi>=0?p.pres[l.pi].f:1;if(l.cant*f>tot(p))l.cant=Math.max(1,Math.floor(tot(p)/f));save();renderCart()}
+function clearCart(){if(S.cart.length&&!confirm('¿Vaciar la venta actual?'))return;S.cart=[];S.cartCli='CF';save();renderCart()}
+function vPOS(){
+  const cats=[...new Set(S.productos.map(p=>p.cat))];
+  $('#view').innerHTML=`<div class="pos"><div>
+    <div class="card"><input id="scan" class="big" placeholder="🔎 Escanea código de barras o escribe el nombre…  (ej. 3*7591000000011)" autocomplete="off">
+    <small>Enter agrega el producto · F2 enfoca el escáner · F9 cobra</small></div>
+    <div class="chips" id="cats"></div><div class="grid" id="grid"></div></div>
+    <div class="card" id="cartBox" style="position:sticky;top:60px"></div></div>`;
+  $('#cats').innerHTML=`<button class="${!ui.cat?'on':''}" onclick="ui.cat='';vPOS()">Todos</button>`+cats.map(c=>`<button class="${ui.cat===c?'on':''}" onclick="ui.cat='${esc(c)}';vPOS()">${esc(c)}</button>`).join('');
+  const sc=$('#scan');sc.value=ui.q;
+  sc.oninput=()=>{ui.q=sc.value;renderGrid()};
+  sc.onkeydown=e=>{
+    if(e.key!=='Enter')return;
+    let v=sc.value.trim();if(!v)return;let q=1;const m=v.match(/^(\d+(?:[.,]\d+)?)\*(.+)$/);if(m){q=parseFloat(m[1].replace(',','.'));v=m[2]}
+    const hit=findCode(v);
+    if(hit){addCart(hit.p.id,hit.pi,q)}
+    else{const fl=filtered();if(fl.length===1)addCart(fl[0].id,-1,q);else{toast('Código no encontrado: '+v,'err');return}}
+    sc.value='';ui.q='';renderGrid();
+  };
+  renderGrid();renderCart();sc.focus();
+}
+function filtered(){const q=ui.q.toLowerCase();return S.productos.filter(p=>(!ui.cat||p.cat===ui.cat)&&(!q||p.nombre.toLowerCase().includes(q)||p.codigo.includes(q)))}
+function renderGrid(){
+  const g=$('#grid');if(!g)return;
+  g.innerHTML=filtered().map(p=>`<button class="pc" onclick="addCart('${p.id}',-1,${p.frac?0.5:1});$('#scan').focus()"><div class="n">${esc(p.nombre)}</div><div class="p">${money(fromUSD(pvp(p),S.cfg.ref),S.cfg.ref)}</div><small>Bs ${fmt(fromUSD(pvp(p),'VES'))}</small><br><small>${tot(p)<=p.min?'<span class="bad">':'<span>'}Stock: ${tot(p)} ${p.unidad}</span> ${p.iva==='E'?'· Exento':''}</small></button>`).join('')||'<small>Sin resultados.</small>';
+}
+function renderCart(){
+  const b=$('#cartBox');if(!b)return;const c=cartCalc();
+  b.innerHTML=`<div class="row sb"><h3 style="margin:0">Venta actual</h3><button class="btn sm" onclick="clearCart()">Vaciar</button></div>
+  <select style="width:100%;margin-bottom:8px" onchange="S.cartCli=this.value;save()">${S.clientes.map(x=>`<option value="${x.id}" ${S.cartCli===x.id?'selected':''}>${esc(x.nombre)}${x.limite?` (crédito disp. ${money(x.limite-saldo(x.id),'USD')})`:''}</option>`).join('')}</select>
+  <div style="max-height:40vh;overflow:auto">${c.lines.map((l,i)=>`<div class="cartl"><div><b>${esc(l.p.nombre)}</b><br><small>${money(fromUSD(l.unit,S.cfg.ref),S.cfg.ref)} / ${esc(l.pn)} ${l.p.iva==='E'?'· Exento':''}</small></div>
+    <div style="text-align:right">${dual(l.tot)}</div>
+    <div class="row" style="margin:0"><input type="number" min="0" step="${l.p.frac?0.001:1}" value="${l.cant}" onchange="setQty(${i},this.value)">
+     ${l.p.pres.length?`<select onchange="setPres(${i},this.value)"><option value="-1">${l.p.unidad}</option>${l.p.pres.map((x,k)=>`<option value="${k}" ${l.pi===k?'selected':''}>${esc(x.n)}</option>`).join('')}</select>`:''}</div>
+    <div style="text-align:right"><button class="btn sm" onclick="setQty(${i},0)">✕</button></div></div>`).join('')||'<small>Carrito vacío. Escanea un producto.</small>'}</div>
+  <div style="margin-top:10px"><div class="tl"><span>Subtotal</span><span>${dualT(c.sub)}</span></div><div class="tl"><span>IVA ${S.cfg.iva}%</span><span>${dualT(c.iva)}</span></div>
+  <div class="tl"><b>TOTAL</b><span class="tot">Bs ${fmt(fromUSD(c.total,'VES'))}</span></div><div class="tl"><span></span><b>${money(fromUSD(c.total,S.cfg.ref),S.cfg.ref)}</b></div></div>
+  <button class="btn pri" style="width:100%;padding:12px;font-size:16px;margin-top:8px" onclick="openPay()" ${c.lines.length?'':'disabled'}>Cobrar (F9)</button>`;
+}
+document.addEventListener('keydown',e=>{
+  if(curView()!=='pos')return;
+  if(e.key==='F9'){e.preventDefault();if(!$('#modal.open'))openPay()}
+  if(e.key==='F2'){e.preventDefault();const s=$('#scan');s&&s.focus()}
+});
+
+/* ---------- cobro ---------- */
+let pay=null;
+const actM=()=>S.cfg.metodos.filter(m=>m.on);
+function payCalc(total){
+  const g=S.cfg.igtf/100;let cov=0,igtf=0,aj=0;
+  const lines=pay.lines.map(l=>{const m=S.cfg.metodos.find(x=>x.id===l.mid);const H=toUSD(l.monto,m.cur);const ig=m.igtf?H-H/(1+g):0;const base=H-ig;const c=base/(1+m.aj/100);cov+=c;igtf+=ig;aj+=c-base;return{...l,m,H,c,ig}});
+  return{lines,cov,igtf,aj,rem:total-cov};
+}
+function openPay(){
+  if(!S.cart.length)return toast('Agrega productos primero','err');
+  if(!S.caja){toast('Debes abrir la caja antes de vender','err');go('caja');return}
+  pay={lines:[],vcur:'USD'};
+  modal(`<h2>Cobrar venta</h2><div id="payTop"></div>
+  <div class="row"><select id="pm" onchange="payDefault()">${actM().map(m=>`<option value="${m.id}">${esc(m.n)}${m.aj?` (${m.aj>0?'+':''}${m.aj}%)`:''}${m.igtf?' · IGTF':''}</option>`).join('')}</select>
+  <input id="pa" type="number" step="0.01" placeholder="Monto recibido" style="width:150px"><button class="btn pri" onclick="payAdd()">Agregar pago</button></div>
+  <div id="payLines"></div><div id="paySum"></div>
+  <div class="actions"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn pri" id="payOk" onclick="finishSale()">Facturar</button></div>`,true);
+  $('#pa').onkeydown=e=>{if(e.key==='Enter')payAdd()};
+  updPay();
+}
+function payDefault(){
+  const c=cartCalc();const a=payCalc(c.total);const m=S.cfg.metodos.find(x=>x.id===val('pm'));const pa=$('#pa');if(!pa||!m)return;
+  if(a.rem>0.005){const H=a.rem*(1+m.aj/100)*(1+(m.igtf?S.cfg.igtf/100:0));pa.value=r2(fromUSD(H,m.cur))}else pa.value='';
+  pa.focus();pa.select();
+}
+function payAdd(){
+  const v=num('pa');if(!(v>0))return toast('Monto inválido','err');
+  pay.lines.push({mid:val('pm'),monto:v});updPay();
+}
+function updPay(){
+  const c=cartCalc();const a=payCalc(c.total);const g=S.cfg.igtf;
+  $('#payTop').innerHTML=`<div class="card" style="background:#f0fdfa"><div class="row sb"><span>Total factura (IVA incl.)</span><span class="tot">Bs ${fmt(fromUSD(c.total,'VES'))}</span></div><div class="row sb"><span class="mut">Tasa USD ${fmt(S.cfg.tasaUSD)} · EUR ${fmt(S.cfg.tasaEUR)}</span><b>$ ${fmt(c.total)} · € ${fmt(fromUSD(c.total,'EUR'))}</b></div></div>`;
+  $('#payLines').innerHTML=a.lines.length?`<table>${a.lines.map((l,i)=>`<tr><td>${esc(l.m.n)}</td><td class="r">${money(l.monto,l.m.cur)}</td><td class="r"><small>cubre $ ${fmt(l.c)}${l.ig?` · IGTF $ ${fmt(l.ig)}`:''}${l.m.aj?` · ajuste ${l.m.aj}%`:''}</small></td><td class="r"><button class="btn sm" onclick="pay.lines.splice(${i},1);updPay()">✕</button></td></tr>`).join('')}</table>`:'<small>Agrega uno o varios pagos (pago combinado).</small>';
+  let s=`<div class="tl"><span>Cubierto</span><b>$ ${fmt(a.cov)}</b></div>`;
+  if(a.igtf>0)s+=`<div class="tl"><span>IGTF ${g}% incluido en divisas</span><span>$ ${fmt(a.igtf)} (Bs ${fmt(fromUSD(a.igtf,'VES'))})</span></div>`;
+  if(a.rem>0.01)s+=`<div class="tl bad"><b>Pendiente</b><b>$ ${fmt(a.rem)} · Bs ${fmt(fromUSD(a.rem,'VES'))}</b></div>`;
+  else if(a.rem<-0.01)s+=`<div class="tl ok"><b>Vuelto</b><span><select onchange="pay.vcur=this.value;updPay()"><option value="USD" ${pay.vcur==='USD'?'selected':''}>USD</option><option value="VES" ${pay.vcur==='VES'?'selected':''}>Bs</option></select> <b>${money(fromUSD(-a.rem,pay.vcur),pay.vcur)}</b></span></div>`;
+  else s+=`<div class="tl ok"><b>✔ Pago completo</b></div>`;
+  $('#paySum').innerHTML=s;
+  const ok=$('#payOk');
+  if(a.rem>0.01){const cl=S.clientes.find(x=>x.id===S.cartCli);const can=cl&&cl.limite>0;ok.textContent=can?'Facturar a crédito (fiado)':'Falta pago';ok.disabled=!can}
+  else{ok.textContent='Facturar';ok.disabled=false}
+  payDefault();
+}
+function finishSale(){
+  const c=cartCalc();const a=payCalc(c.total);let cred=0,vuelto=null;
+  if(a.rem>0.01){
+    const cl=S.clientes.find(x=>x.id===S.cartCli);
+    if(!cl||!cl.limite)return toast('El cliente no tiene crédito autorizado','err');
+    if(saldo(cl.id)+a.rem>cl.limite+0.001)return toast(`Excede el límite de crédito (${money(cl.limite,'USD')}, deuda ${money(saldo(cl.id),'USD')})`,'err');
+    cred=r2(a.rem);
+  }else if(a.rem<-0.01)vuelto={cur:pay.vcur,monto:r2(fromUSD(-a.rem,pay.vcur))};
+  const n=++S.cfg.nroVenta;const nro=String(n).padStart(8,'0');const f=new Date().toISOString();
+  const items=c.lines.map(l=>({pid:l.pid,cod:l.p.codigo,nombre:l.p.nombre,cant:l.cant,pres:l.pn,f:l.f,unit:l.p.precio*l.f,iva:l.p.iva,costoU:l.p.costo*l.f,base:l.base,tot:l.tot}));
+  const v={id:uid(),nro,f,cid:S.cartCli,cajaId:S.caja.id,caja:S.caja.n,items,subUSD:c.sub,ivaUSD:c.iva,igtfUSD:a.igtf,totalUSD:c.total,ajusteUSD:a.aj,
+    tasa:{usd:S.cfg.tasaUSD,eur:S.cfg.tasaEUR},pagos:a.lines.map(l=>({mid:l.mid,nombre:l.m.n,cur:l.m.cur,ef:l.m.ef,monto:l.monto,usd:l.H})),vuelto,credito:cred};
+  items.forEach(it=>salidaVenta(it.pid,it.cant*it.f,'Fact. '+nro));
+  if(cred)S.cxc.push({id:uid(),cid:S.cartCli,f,tipo:'cargo',usd:cred,tasa:S.cfg.tasaUSD,nota:'Factura '+nro,ref:v.id});
+  S.ventas.push(v);S.cart=[];S.cartCli='CF';save();
+  toast('Venta registrada · Factura '+nro,'ok');showTicket(v.id);
+}
+
+/* ---------- ticket / factura ---------- */
+function ticketHTML(v){
+  const c=S.cfg;const cli=S.clientes.find(x=>x.id===v.cid)||{nombre:'Consumidor final'};
+  const grav=v.items.filter(i=>i.iva==='G').reduce((a,i)=>a+i.base,0),exe=v.items.filter(i=>i.iva==='E').reduce((a,i)=>a+i.base,0);
+  const L=(a,b)=>`<div class="l"><span>${a}</span><span>${b}</span></div>`;
+  return `<div class="tk"><div class="c"><b>${esc(c.empresa)}</b><br>RIF: ${esc(c.rif)}<br>${esc(c.dir)}<br>Tel: ${esc(c.tel)}</div><hr>
+  <b>${v.anulada?'*** ANULADA *** ':''}FACTURA Nº ${v.nro}</b><br>Control: 00-${v.nro}<br>Fecha: ${dt(v.f)} · Caja ${v.caja}<br>Cliente: ${esc(cli.nombre)}${cli.rif?' · '+esc(cli.rif):''}<hr>
+  ${v.items.map(i=>`<div>${fmt(i.cant,i.cant%1?3:0)} ${esc(i.pres)} x ${esc(i.nombre)}</div>${L('&nbsp;&nbsp;$ '+fmt(i.unit*(1+(i.iva==='G'?c.iva/100:0)))+' c/u','$ '+fmt(i.tot)+' ('+i.iva+')')}`).join('')}<hr>
+  ${L('Base imponible (G)','$ '+fmt(grav))}${L('Exento (E)','$ '+fmt(exe))}${L('IVA '+c.iva+'%','$ '+fmt(v.ivaUSD))}${v.igtfUSD>0?L('IGTF '+c.igtf+'%','$ '+fmt(v.igtfUSD)):''}
+  ${L('<b>TOTAL USD</b>','<b>$ '+fmt(v.totalUSD)+'</b>')}${L('<b>TOTAL Bs</b>','<b>Bs '+fmt(v.totalUSD*v.tasa.usd)+'</b>')}${L('Tasa BCV','Bs '+fmt(v.tasa.usd))}${v.igtfUSD>0?L('IGTF en Bs','Bs '+fmt(v.igtfUSD*v.tasa.usd)):''}<hr>
+  ${v.pagos.map(p=>L(esc(p.nombre),money(p.monto,p.cur))).join('')}${v.vuelto?L('Vuelto',money(v.vuelto.monto,v.vuelto.cur)):''}${v.credito?L('A crédito (fiado)','$ '+fmt(v.credito)):''}<hr>
+  <div class="c">¡Gracias por su compra!</div></div>`;
+}
+function ticketText(v){
+  const c=S.cfg;
+  return `*${c.empresa}* (RIF ${c.rif})\nFactura Nº ${v.nro} · ${dt(v.f)}\n\n`+v.items.map(i=>`${fmt(i.cant,i.cant%1?3:0)} x ${i.nombre} — $ ${fmt(i.tot)}`).join('\n')+`\n\nIVA: $ ${fmt(v.ivaUSD)}${v.igtfUSD>0?`\nIGTF: $ ${fmt(v.igtfUSD)}`:''}\n*TOTAL: $ ${fmt(v.totalUSD)} / Bs ${fmt(v.totalUSD*v.tasa.usd)}* (tasa ${fmt(v.tasa.usd)})\nPagos: `+v.pagos.map(p=>`${p.nombre} ${money(p.monto,p.cur)}`).join(', ')+(v.credito?`\nA crédito: $ ${fmt(v.credito)}`:'')+'\n¡Gracias por su compra!';
+}
+function showTicket(id){
+  const v=S.ventas.find(x=>x.id===id);const cli=S.clientes.find(x=>x.id===v.cid);
+  modal(`<div style="max-height:60vh;overflow:auto">${ticketHTML(v)}</div>
+  <div class="actions"><button class="btn" onclick="printHTML(ticketHTML(S.ventas.find(x=>x.id==='${id}')))">🖨️ Imprimir térmica</button>
+  <button class="btn" onclick="printHTML(ticketHTML(S.ventas.find(x=>x.id==='${id}')))">📄 PDF</button>
+  <button class="btn" onclick="waTicket('${id}')">💬 WhatsApp</button>
+  ${S.cfg.impresion==='fiscal'?`<button class="btn" onclick="fiscalExport('${id}')">🧾 Impresora fiscal</button>`:''}
+  <button class="btn pri" onclick="closeModal();go('pos');render()">Nueva venta</button></div>`);
+}
+function waTicket(id){const v=S.ventas.find(x=>x.id===id);const cli=S.clientes.find(x=>x.id===v.cid);const p=cli&&cli.tel?cli.tel:prompt('Número de WhatsApp del cliente (ej. 0414-1234567):');if(p)wa(p,ticketText(v))}
+async function fiscalExport(id){
+  const v=S.ventas.find(x=>x.id===id);
+  const doc={tipo:'FACTURA',nro:v.nro,fecha:v.f,empresa:S.cfg.rif,cliente:S.clientes.find(x=>x.id===v.cid),items:v.items.map(i=>({desc:i.nombre,cant:i.cant,precioUnit:+(i.unit*v.tasa.usd).toFixed(2),tasaIVA:i.iva==='G'?S.cfg.iva:0,grupo:i.iva})),pagos:v.pagos.map(p=>({forma:p.nombre,moneda:p.cur,monto:p.monto})),igtfBs:+(v.igtfUSD*v.tasa.usd).toFixed(2),tasaBCV:v.tasa.usd};
+  if('serial' in navigator&&confirm('¿Enviar por puerto serial (USB) a la impresora fiscal? Cancelar = descargar archivo JSON.')){
+    try{const port=await navigator.serial.requestPort();await port.open({baudRate:9600});const w=port.writable.getWriter();const enc=new TextEncoder();
+      for(const i of doc.items)await w.write(enc.encode(`ITEM|${i.desc}|${i.cant}|${i.precioUnit}|${i.grupo}\r\n`));
+      for(const p of doc.pagos)await w.write(enc.encode(`PAGO|${p.forma}|${p.monto}\r\n`));
+      await w.write(enc.encode('CIERRE\r\n'));w.releaseLock();await port.close();toast('Enviado a la impresora fiscal','ok');return}
+    catch(e){toast('No se pudo usar el puerto serial; se descargará el archivo','err')}
+  }
+  dl('fiscal-'+v.nro+'.json',JSON.stringify(doc,null,2),'application/json');
+}
+
+/* ============================================================
+   INVENTARIO / WMS
+   ============================================================ */
+function vInv(){
+  const T=[['prod','Productos'],['alert','Alertas'],['kardex','Kardex'],['ubic','Ubicaciones']];
+  $('#view').innerHTML=`<h2>Inventario y almacén</h2><div class="tabs">${T.map(([k,n])=>`<button class="${ui.inv===k?'on':''}" onclick="ui.inv='${k}';vInv()">${n}</button>`).join('')}</div><div id="invb"></div>`;
+  ({prod:invProd,alert:invAlert,kardex:invKardex,ubic:invUbic})[ui.inv]();
+}
+function ubName(id){const u=S.ubic.find(x=>x.id===id);return u?u.nombre:(id||'—')}
+function invProd(){
+  $('#invb').innerHTML=`<div class="row"><input id="iq" placeholder="Buscar producto o código…" value="${esc(ui.invq)}" style="width:280px"><span style="flex:1"></span>
+   <button class="btn" onclick="trasModal()">⇄ Traslado Almacén → Exhibición</button><button class="btn" onclick="ajusteModal()">± Ajuste / entrada / salida</button><button class="btn pri" onclick="prodModal()">+ Nuevo producto</button></div>
+   <div class="card tw" id="itab"></div>`;
+  $('#iq').oninput=e=>{ui.invq=e.target.value;invTab()};invTab();
+}
+function invTab(){
+  const q=ui.invq.toLowerCase();
+  $('#itab').innerHTML=`<table><tr><th>Código</th><th>Producto</th><th class="r">Costo</th><th class="r">Precio base</th><th class="r">PVP c/IVA</th><th class="r">Almacén</th><th class="r">Exhib.</th><th class="r">Total</th><th>Mín.</th><th>Vence</th><th>Ubicación</th><th></th></tr>`+
+  S.productos.filter(p=>!q||p.nombre.toLowerCase().includes(q)||p.codigo.includes(q)).map(p=>{
+    const t=tot(p),d=p.vence?daysTo(p.vence):null;
+    return `<tr><td><small>${esc(p.codigo)}</small></td><td><b>${esc(p.nombre)}</b><br><small>${esc(p.cat)} · ${p.unidad}${p.frac?' (fraccionable)':''} · ${p.iva==='G'?'IVA '+S.cfg.iva+'%':'Exento'}${p.pres.length?' · '+p.pres.map(x=>esc(x.n)).join(', '):''}</small></td>
+    <td class="r">$ ${fmt(p.costo)}</td><td class="r">$ ${fmt(p.precio)}<br><small>${fmt((p.precio/p.costo-1)*100,0)}%</small></td><td class="r">${dual(pvp(p))}</td>
+    <td class="r">${p.stk.ALM||0}</td><td class="r">${p.stk.EXH||0}</td><td class="r"><span class="badge ${t<=0?'b-r':t<=p.min?'b-a':'b-g'}">${t}</span></td><td>${p.min}</td>
+    <td>${p.vence?`<span class="badge ${d<0?'b-r':d<=30?'b-a':'b-n'}">${p.vence}</span>`:'—'}</td><td><small>${esc(ubName(p.ubic))}</small></td>
+    <td style="white-space:nowrap"><button class="btn sm" onclick="prodModal('${p.id}')">Editar</button> <button class="btn sm" onclick="ui.inv='kardex';ui.kp='${p.id}';vInv()">Kardex</button></td></tr>`}).join('')+'</table>';
+}
+function invAlert(){
+  const a=alerts();
+  $('#invb').innerHTML=`<div class="row"><button class="btn" onclick="askNotif()">🔔 Activar notificaciones del navegador</button></div>
+  <div class="card"><h3>Stock mínimo / agotado (${a.low.length})</h3><table><tr><th>Producto</th><th class="r">Stock</th><th class="r">Mínimo</th><th class="r">Sugerido a pedir</th></tr>${a.low.map(p=>`<tr><td>${esc(p.nombre)}</td><td class="r">${tot(p)}</td><td class="r">${p.min}</td><td class="r">${Math.max(0,p.min*2-tot(p))}</td></tr>`).join('')||'<tr><td colspan=4><small>Sin alertas</small></td></tr>'}</table></div>
+  <div class="card"><h3>Vencimientos (≤ 30 días)</h3><table><tr><th>Producto</th><th>Vence</th><th class="r">Días</th><th class="r">Stock</th></tr>${a.exp.map(p=>{const d=daysTo(p.vence);return`<tr><td>${esc(p.nombre)}</td><td>${p.vence}</td><td class="r"><span class="badge ${d<0?'b-r':d<=7?'b-a':'b-b'}">${d<0?'VENCIDO':d}</span></td><td class="r">${tot(p)}</td></tr>`}).join('')||'<tr><td colspan=4><small>Sin alertas</small></td></tr>'}</table></div>`;
+}
+function invKardex(){
+  const sel=ui.kp||'';
+  const rows=S.kardex.filter(k=>!sel||k.pid===sel).slice().reverse().slice(0,300);
+  $('#invb').innerHTML=`<div class="row"><select id="kps" onchange="ui.kp=this.value;vInv()"><option value="">Todos los productos</option>${S.productos.map(p=>`<option value="${p.id}" ${sel===p.id?'selected':''}>${esc(p.nombre)}</option>`).join('')}</select>
+  <button class="btn" onclick="dl('kardex.csv',csv([['Fecha','Producto','Tipo','Depósito','Cantidad','Saldo','Motivo','Ref'],...S.kardex.filter(k=>!ui.kp||k.pid===ui.kp).map(k=>[k.f,prod(k.pid)?.nombre,k.tipo,k.dep,k.cant,k.saldo,k.motivo,k.ref])]),'text/csv')">⬇ CSV</button></div>
+  <div class="card tw"><table><tr><th>Fecha</th><th>Producto</th><th>Tipo</th><th>Depósito</th><th class="r">Entrada</th><th class="r">Salida</th><th class="r">Saldo total</th><th>Motivo</th><th>Ref.</th></tr>
+  ${rows.map(k=>`<tr><td>${dt(k.f)}</td><td>${esc(prod(k.pid)?.nombre||'—')}</td><td><span class="badge ${k.cant>=0?'b-g':'b-r'}">${k.tipo}</span></td><td>${depName[k.dep]||k.dep}</td><td class="r">${k.cant>0?k.cant:''}</td><td class="r">${k.cant<0?-k.cant:''}</td><td class="r"><b>${k.saldo}</b></td><td>${esc(k.motivo)}</td><td><small>${esc(k.ref)}</small></td></tr>`).join('')}</table></div>`;
+}
+function invUbic(){
+  $('#invb').innerHTML=`<div class="card"><h3>Ubicaciones del almacén</h3><div class="row"><input id="un" placeholder="Nombre (ej. Pasillo 4 · Estante D)"><select id="ut"><option>Estante</option><option>Pasillo</option><option>Refrigerado</option><option>Depósito</option></select><button class="btn pri" onclick="addUbic()">Agregar</button></div>
+  <table><tr><th>ID</th><th>Nombre</th><th>Tipo</th><th class="r">Productos</th><th></th></tr>${S.ubic.map(u=>`<tr><td>${esc(u.id)}</td><td>${esc(u.nombre)}</td><td>${esc(u.tipo)}</td><td class="r">${S.productos.filter(p=>p.ubic===u.id).length}</td><td>${['ALM','EXH'].includes(u.id)?'<small>Sistema</small>':`<button class="btn sm" onclick="S.ubic=S.ubic.filter(x=>x.id!=='${u.id}');save();vInv()">Eliminar</button>`}</td></tr>`).join('')}</table></div>
+  <div class="card"><h3>Mapa de productos por ubicación</h3>${S.ubic.filter(u=>!['ALM','EXH'].includes(u.id)).map(u=>`<p><b>${esc(u.nombre)}</b>: ${S.productos.filter(p=>p.ubic===u.id).map(p=>esc(p.nombre)).join(', ')||'<small>vacío</small>'}</p>`).join('')}</div>`;
+}
+function addUbic(){const n=val('un').trim();if(!n)return;S.ubic.push({id:'U'+uid(),nombre:n,tipo:val('ut')});save();vInv()}
+
+function prodModal(id){
+  const p=id?prod(id):{codigo:'',nombre:'',cat:'Víveres',unidad:'UND',frac:false,costo:1,margen:30,precio:1.3,iva:'G',min:5,vence:'',ubic:'A1',pres:[]};
+  modal(`<h2>${id?'Editar':'Nuevo'} producto</h2>
+  <div class="f"><div><label>Código de barras</label><input id="pc" value="${esc(p.codigo)}"></div><div style="grid-column:span 2"><label>Nombre</label><input id="pn" value="${esc(p.nombre)}"></div>
+  <div><label>Categoría</label><input id="pct" list="cl" value="${esc(p.cat)}"><datalist id="cl">${[...new Set(S.productos.map(x=>x.cat))].map(c=>`<option>${esc(c)}`).join('')}</datalist></div>
+  <div><label>Unidad base</label><select id="pu">${['UND','KG','LT','GR'].map(u=>`<option ${p.unidad===u?'selected':''}>${u}</option>`).join('')}</select></div>
+  <div><label>Venta fraccionada (peso/detalle)</label><select id="pf"><option value="0">No</option><option value="1" ${p.frac?'selected':''}>Sí</option></select></div>
+  <div><label>IVA</label><select id="pi" onchange="pfCalc()"><option value="G" ${p.iva==='G'?'selected':''}>General ${S.cfg.iva}%</option><option value="E" ${p.iva==='E'?'selected':''}>Exento</option></select></div></div>
+  <div class="f"><div><label>Costo USD</label><input id="pco" type="number" step="0.0001" value="${p.costo}" oninput="pfCalc('c')"></div><div><label>Margen % s/costo</label><input id="pma" type="number" step="0.1" value="${p.margen}" oninput="pfCalc('c')"></div>
+  <div><label>Precio base USD (sin IVA)</label><input id="ppr" type="number" step="0.01" value="${p.precio}" oninput="pfCalc('p')"></div><div><label>PVP con IVA</label><div id="ppv" style="padding:7px 0;font-weight:700"></div></div></div>
+  <div class="f"><div><label>Stock mínimo</label><input id="pmi" type="number" value="${p.min}"></div><div><label>Fecha de vencimiento</label><input id="pv" type="date" value="${p.vence||''}"></div>
+  <div><label>Ubicación</label><select id="pub"><option value="">—</option>${S.ubic.filter(u=>!['ALM','EXH'].includes(u.id)).map(u=>`<option value="${u.id}" ${p.ubic===u.id?'selected':''}>${esc(u.nombre)}</option>`).join('')}</select></div>
+  ${id?'':`<div><label>Stock inicial Almacén</label><input id="sa" type="number" value="0"></div><div><label>Stock inicial Exhibición</label><input id="se" type="number" value="0"></div>`}</div>
+  <label>Presentaciones de venta (una por línea: Nombre|Unidades por presentación|Código de barras opcional)</label>
+  <textarea id="ppres" rows="3" style="width:100%" placeholder="Caja x12|12|7591000000999">${p.pres.map(x=>`${x.n}|${x.f}|${x.codigo||''}`).join('\n')}</textarea>
+  <div class="actions">${id?`<button class="btn red" onclick="prodDel('${id}')">Eliminar</button>`:''}<button class="btn" onclick="closeModal()">Cancelar</button><button class="btn pri" onclick="prodSave('${id||''}')">Guardar</button></div>`);
+  pfCalc('c');
+}
+function pfCalc(src){
+  const co=num('pco'),ma=num('pma');
+  if(src==='c')$('#ppr').value=r2(co*(1+ma/100));
+  if(src==='p'&&co>0)$('#pma').value=r2((num('ppr')/co-1)*100);
+  const pv=num('ppr')*(1+(val('pi')==='G'?S.cfg.iva/100:0));$('#ppv').innerHTML=dual(pv);
+}
+function prodSave(id){
+  const n=val('pn').trim();if(!n)return toast('Falta el nombre','err');
+  const cod=val('pc').trim();if(cod&&S.productos.some(x=>x.codigo===cod&&x.id!==id))return toast('Código de barras duplicado','err');
+  const pres=val('ppres').split('\n').map(l=>l.split('|').map(s=>s.trim())).filter(a=>a[0]&&parseFloat(a[1])>0).map(a=>({n:a[0],f:parseFloat(a[1]),codigo:a[2]||''}));
+  const d={codigo:cod,nombre:n,cat:val('pct')||'General',unidad:val('pu'),frac:val('pf')==='1',iva:val('pi'),costo:num('pco'),margen:num('pma'),precio:num('ppr'),min:num('pmi'),vence:val('pv'),ubic:val('pub'),pres};
+  if(id)Object.assign(prod(id),d);
+  else{const p={id:uid(),...d,stk:{ALM:0,EXH:0}};S.productos.push(p);if(num('sa')>0)mover(p.id,'ENTRADA',num('sa'),'ALM','Inventario inicial');if(num('se')>0)mover(p.id,'ENTRADA',num('se'),'EXH','Inventario inicial')}
+  save();closeModal();toast('Producto guardado','ok');render();
+}
+function prodDel(id){if(!confirm('¿Eliminar producto? El kardex histórico se conserva.'))return;S.productos=S.productos.filter(p=>p.id!==id);S.cart=S.cart.filter(l=>l.pid!==id);save();closeModal();render()}
+const prodOpts=sel=>S.productos.map(p=>`<option value="${p.id}" ${sel===p.id?'selected':''}>${esc(p.nombre)} (${tot(p)})</option>`).join('');
+function ajusteModal(){
+  modal(`<h2>Ajuste de inventario</h2><div class="f"><div style="grid-column:1/-1"><label>Producto</label><select id="ap">${prodOpts()}</select></div>
+  <div><label>Operación</label><select id="at"><option value="ENTRADA">Entrada (+)</option><option value="SALIDA">Salida (−) merma/consumo</option><option value="CONTEO">Conteo físico (fijar cantidad)</option></select></div>
+  <div><label>Depósito</label><select id="ad"><option value="ALM">Almacén</option><option value="EXH">Exhibición</option></select></div><div><label>Cantidad</label><input id="ac" type="number" step="0.001"></div>
+  <div style="grid-column:1/-1"><label>Motivo</label><input id="am" placeholder="Ej. Producto dañado, devolución, conteo mensual"></div></div>
+  <div class="actions"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn pri" onclick="ajusteSave()">Aplicar</button></div>`);
+}
+function ajusteSave(){
+  const p=prod(val('ap')),t=val('at'),d=val('ad'),c=num('ac');if(c<0||(!c&&t!=='CONTEO'))return toast('Cantidad inválida','err');
+  let delta=t==='ENTRADA'?c:t==='SALIDA'?-c:c-(p.stk[d]||0);
+  if((p.stk[d]||0)+delta<-1e-9)return toast('El stock no puede quedar negativo','err');
+  if(delta===0)return closeModal();
+  mover(p.id,t==='CONTEO'?'AJUSTE':t,delta,d,val('am')||'Ajuste manual');save();closeModal();toast('Ajuste aplicado','ok');render();
+}
+function trasModal(){
+  modal(`<h2>Traslado entre depósitos</h2><div class="f"><div style="grid-column:1/-1"><label>Producto</label><select id="tp">${prodOpts()}</select></div>
+  <div><label>Desde</label><select id="tf"><option value="ALM">Almacén</option><option value="EXH">Exhibición</option></select></div><div><label>Hacia</label><select id="tt"><option value="EXH">Exhibición</option><option value="ALM">Almacén</option></select></div><div><label>Cantidad</label><input id="tc" type="number" step="0.001"></div></div>
+  <div class="actions"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn pri" onclick="trasSave()">Trasladar</button></div>`);
+}
+function trasSave(){
+  const p=prod(val('tp')),a=val('tf'),b=val('tt'),c=num('tc');
+  if(a===b||!(c>0))return toast('Datos inválidos','err');if((p.stk[a]||0)<c)return toast('Stock insuficiente en el depósito de origen','err');
+  const ref='TR-'+uid().slice(-4);mover(p.id,'TRASLADO',-c,a,'Traslado a '+depName[b],ref);mover(p.id,'TRASLADO',c,b,'Traslado desde '+depName[a],ref);save();closeModal();toast('Traslado realizado','ok');render();
+}
+
+/* ============================================================
+   CAJA Y TESORERÍA
+   ============================================================ */
+const DEN={USD:[100,50,20,10,5,2,1],VES:[500,200,100,50,20,10,5]};
+function denForm(pfx,cur,init){return `<div class="den">${DEN[cur].map(d=>`<span>${sym[cur]} ${d}</span><input type="number" min="0" id="${pfx}${cur}${d}" value="${(init&&init[d])||0}" oninput="denTot('${pfx}')">`).join('')}</div>`}
+function denSum(pfx,cur){return DEN[cur].reduce((a,d)=>a+d*(num(pfx+cur+d)),0)}
+function denGet(pfx,cur){const o={};DEN[cur].forEach(d=>{o[d]=num(pfx+cur+d)});return o}
+function denTot(pfx){const u=$('#'+pfx+'tu'),b=$('#'+pfx+'tb');if(u)u.textContent=money(denSum(pfx,'USD'),'USD');if(b)b.textContent=money(denSum(pfx,'VES'),'VES');if(pfx==='cl')cierreDif()}
+function openCajaModal(){
+  modal(`<h2>Apertura de caja</h2><div class="f"><div><label>Cajero</label><input id="cj" value="Cajero 1"></div></div><p class="mut">Fondo inicial en efectivo por denominación:</p>
+  <div class="f"><div><h3>USD</h3>${denForm('op','USD')}<p>Total: <b id="optu">$ 0,00</b></p></div><div><h3>Bolívares</h3>${denForm('op','VES')}<p>Total: <b id="optb">Bs 0,00</b></p></div></div>
+  <div class="actions"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn pri" onclick="openCaja()">Abrir caja</button></div>`);
+}
+function openCaja(){
+  S.caja={id:uid(),n:++S.cfg.nroCaja,cajero:val('cj'),apertura:new Date().toISOString(),fondoUSD:denSum('op','USD'),fondoVES:denSum('op','VES'),den:{USD:denGet('op','USD'),VES:denGet('op','VES')},movs:[]};
+  save();closeModal();toast('Caja abierta','ok');render();
+}
+function cajaStats(c){
+  const ok=S.ventas.filter(v=>v.cajaId===c.id&&!v.anulada);const pm={};const esp={USD:c.fondoUSD||0,EUR:0,VES:c.fondoVES||0};
+  const add=(nombre,cur,monto,usd)=>{pm[nombre]=pm[nombre]||{nombre,cur,n:0,monto:0,usd:0};pm[nombre].n++;pm[nombre].monto+=monto;pm[nombre].usd+=usd};
+  ok.forEach(v=>{v.pagos.forEach(p=>{add(p.nombre,p.cur,p.monto,p.usd);if(p.ef)esp[p.cur]+=p.monto});if(v.vuelto)esp[v.vuelto.cur]-=v.vuelto.monto});
+  let ing=0,egr=0;
+  c.movs.forEach(m=>{
+    if(m.tipo==='abono'){add('Abono CxC · '+m.nombre,m.cur,m.monto,m.usd);if(m.ef)esp[m.cur]+=m.monto}
+    else if(m.tipo==='ingreso'){ing+=m.usd;esp[m.cur]+=m.monto}
+    else{egr+=m.usd;esp[m.cur]-=m.monto}
+  });
+  return{n:ok.length,anul:S.ventas.filter(v=>v.cajaId===c.id&&v.anulada).length,total:ok.reduce((a,v)=>a+v.totalUSD,0),iva:ok.reduce((a,v)=>a+v.ivaUSD,0),igtf:ok.reduce((a,v)=>a+v.igtfUSD,0),cred:ok.reduce((a,v)=>a+(v.credito||0),0),
+    pm:Object.values(pm),esp:{USD:r2(esp.USD),EUR:r2(esp.EUR),VES:r2(esp.VES)},ing,egr,fondo:{USD:c.fondoUSD,VES:c.fondoVES}};
+}
+function vCaja(){
+  const c=S.caja;let h=`<h2>Caja y tesorería</h2>`;
+  if(!c)h+=`<div class="card"><h3>🔴 Caja cerrada</h3><p>Abre la caja para comenzar a facturar.</p><button class="btn pri" onclick="openCajaModal()">Abrir caja</button></div>`;
+  else{
+    const s=cajaStats(c);
+    h+=`<div class="row sb"><div><b>Caja #${c.n}</b> · ${esc(c.cajero)} · abierta ${dt(c.apertura)}</div><div class="row"><button class="btn" onclick="movModal('ingreso')">+ Ingreso</button><button class="btn" onclick="movModal('egreso')">− Egreso / caja chica</button><button class="btn" onclick="repX()">Reporte X</button><button class="btn red" onclick="cierreModal()">Cierre Z</button></div></div>
+    <div class="kpis"><div class="kpi"><div class="l">Ventas del turno (${s.n})</div><div class="v">${dual(s.total)}</div></div><div class="kpi"><div class="l">Efectivo USD esperado</div><div class="v">${money(s.esp.USD,'USD')}</div></div><div class="kpi"><div class="l">Efectivo Bs esperado</div><div class="v">${money(s.esp.VES,'VES')}</div></div>${s.esp.EUR?`<div class="kpi"><div class="l">Efectivo EUR</div><div class="v">${money(s.esp.EUR,'EUR')}</div></div>`:''}</div>
+    <div class="card"><h3>Cobros por forma de pago</h3>${pmTable(s.pm)}</div>
+    <div class="card"><h3>Ingresos / egresos manuales</h3><table><tr><th>Hora</th><th>Tipo</th><th>Concepto</th><th class="r">Monto</th></tr>${c.movs.filter(m=>m.tipo!=='abono').map(m=>`<tr><td>${dt(m.f)}</td><td><span class="badge ${m.tipo==='ingreso'?'b-g':'b-r'}">${m.tipo}</span></td><td>${esc(m.concepto)}</td><td class="r">${money(m.monto,m.cur)}</td></tr>`).join('')||'<tr><td colspan=4><small>Sin movimientos</small></td></tr>'}</table></div>`;
+  }
+  h+=`<div class="card"><h3>Historial de cierres Z</h3><table><tr><th>Cierre</th><th>Caja</th><th>Cajero</th><th class="r">Ventas</th><th class="r">Diferencia USD</th><th class="r">Diferencia Bs</th><th></th></tr>${S.cierres.slice().reverse().map(z=>`<tr><td>${dt(z.cierre)}</td><td>#${z.n}</td><td>${esc(z.cajero)}</td><td class="r">${dual(z.stats.total)}</td><td class="r ${Math.abs(z.dif.USD)>0.01?'bad':'ok'}">${fmt(z.dif.USD)}</td><td class="r ${Math.abs(z.dif.VES)>0.01?'bad':'ok'}">${fmt(z.dif.VES)}</td><td><button class="btn sm" onclick="repZ('${z.id}')">Ver</button></td></tr>`).join('')||'<tr><td colspan=7><small>Aún no hay cierres.</small></td></tr>'}</table></div>`;
+  $('#view').innerHTML=h;
+}
+function pmTable(pm){return `<table><tr><th>Forma de pago</th><th class="r">Operaciones</th><th class="r">Monto</th><th class="r">Equiv. USD</th></tr>${pm.map(p=>`<tr><td>${esc(p.nombre)}</td><td class="r">${p.n}</td><td class="r">${money(p.monto,p.cur)}</td><td class="r">$ ${fmt(p.usd)}</td></tr>`).join('')||'<tr><td colspan=4><small>Sin cobros</small></td></tr>'}</table>`}
+function movModal(t){
+  modal(`<h2>${t==='ingreso'?'Ingreso':'Egreso'} manual de caja</h2><div class="f"><div><label>Moneda (efectivo)</label><select id="mc"><option value="USD">USD</option><option value="VES">Bs</option><option value="EUR">EUR</option></select></div><div><label>Monto</label><input id="mm" type="number" step="0.01"></div><div style="grid-column:1/-1"><label>Concepto</label><input id="mk" placeholder="${t==='egreso'?'Pago a proveedor menor, vueltos, gastos…':'Aporte, cambio…'}"></div></div>
+  <div class="actions"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn pri" onclick="movSave('${t}')">Registrar</button></div>`);
+}
+function movSave(t){
+  const m=num('mm'),cur=val('mc');if(!(m>0)||!val('mk').trim())return toast('Completa monto y concepto','err');
+  if(t==='egreso'&&cajaStats(S.caja).esp[cur]<m&&!confirm('El efectivo esperado en esa moneda es menor al egreso. ¿Continuar?'))return;
+  S.caja.movs.push({id:uid(),f:new Date().toISOString(),tipo:t,cur,monto:m,usd:toUSD(m,cur),concepto:val('mk')});save();closeModal();render();
+}
+function cierreModal(){
+  const s=cajaStats(S.caja);
+  modal(`<h2>Cuadre y cierre de caja (Z)</h2><p class="mut">Cuenta el efectivo físico por denominación.</p>
+  <div class="f"><div><h3>USD <small>esperado ${money(s.esp.USD,'USD')}</small></h3>${denForm('cl','USD')}<p>Contado: <b id="cltu">$ 0,00</b></p></div>
+  <div><h3>Bs <small>esperado ${money(s.esp.VES,'VES')}</small></h3>${denForm('cl','VES')}<p>Contado: <b id="cltb">Bs 0,00</b></p></div></div>
+  ${s.esp.EUR?`<div class="f"><div><label>Efectivo EUR contado (esperado ${money(s.esp.EUR,'EUR')})</label><input id="cleu" type="number" step="0.01" value="0" oninput="cierreDif()"></div></div>`:''}
+  <div class="card" id="cldif"></div>
+  <div class="actions"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn red" onclick="cierreZ()">Cerrar caja (Z)</button></div>`,true);
+  cierreDif();
+}
+function cierreDif(){
+  const s=cajaStats(S.caja);const d={USD:denSum('cl','USD')-s.esp.USD,VES:denSum('cl','VES')-s.esp.VES,EUR:(num('cleu'))-s.esp.EUR};
+  const f=(x,c)=>`<span class="${Math.abs(x)<0.01?'ok':'bad'}">${x>0.005?'Sobrante':x<-0.005?'Faltante':'Cuadrado'} ${money(Math.abs(x),c)}</span>`;
+  $('#cldif').innerHTML=`<b>Diferencias:</b> USD ${f(d.USD,'USD')} · Bs ${f(d.VES,'VES')}${s.esp.EUR?` · EUR ${f(d.EUR,'EUR')}`:''}`;
+}
+function cierreZ(){
+  const c=S.caja,s=cajaStats(c);const cont={USD:denSum('cl','USD'),VES:denSum('cl','VES'),EUR:num('cleu')};
+  const dif={USD:r2(cont.USD-s.esp.USD),VES:r2(cont.VES-s.esp.VES),EUR:r2(cont.EUR-s.esp.EUR)};
+  if(!confirm('¿Cerrar la caja? Esta acción genera el reporte Z y no se puede deshacer.'))return;
+  const z={id:uid(),n:c.n,cajero:c.cajero,apertura:c.apertura,cierre:new Date().toISOString(),stats:s,contado:cont,dif,movs:c.movs,den:c.den};
+  S.cierres.push(z);S.caja=null;save();render();repZ(z.id);
+}
+function reportHTML(tipo,z){
+  const s=z.stats;const L=(a,b)=>`<div class="l"><span>${a}</span><span>${b}</span></div>`;
+  return `<div class="tk"><div class="c"><b>${esc(S.cfg.empresa)}</b><br>RIF ${esc(S.cfg.rif)}<br><b>REPORTE ${tipo}${tipo==='Z'?' · CIERRE DE CAJA':' · PARCIAL'}</b></div><hr>
+  Caja #${z.n} · ${esc(z.cajero)}<br>Apertura: ${dt(z.apertura)}<br>${z.cierre?'Cierre: '+dt(z.cierre)+'<br>':''}<hr>
+  ${L('Facturas',s.n)}${L('Anuladas',s.anul)}${L('Total ventas','$ '+fmt(s.total))}${L('IVA','$ '+fmt(s.iva))}${L('IGTF','$ '+fmt(s.igtf))}${L('A crédito','$ '+fmt(s.cred))}<hr><b>Formas de pago</b>
+  ${s.pm.map(p=>L(esc(p.nombre)+' ('+p.n+')',money(p.monto,p.cur))).join('')}<hr>
+  ${L('Fondo inicial','$ '+fmt(s.fondo.USD)+' / Bs '+fmt(s.fondo.VES))}${L('Ingresos manuales','$ '+fmt(s.ing))}${L('Egresos manuales','$ '+fmt(s.egr))}<hr>
+  <b>Efectivo esperado</b>${L('USD',fmt(s.esp.USD))}${L('Bs',fmt(s.esp.VES))}${s.esp.EUR?L('EUR',fmt(s.esp.EUR)):''}
+  ${z.contado?`<b>Efectivo contado</b>${L('USD',fmt(z.contado.USD))}${L('Bs',fmt(z.contado.VES))}<b>Diferencia</b>${L('USD',fmt(z.dif.USD))}${L('Bs',fmt(z.dif.VES))}`:''}</div>`;
+}
+function repX(){const c=S.caja;const z={n:c.n,cajero:c.cajero,apertura:c.apertura,stats:cajaStats(c)};modal(`<div style="max-height:65vh;overflow:auto">${reportHTML('X',z)}</div><div class="actions"><button class="btn" onclick="closeModal()">Cerrar</button><button class="btn pri" onclick="printHTML(reportHTML('X',{n:S.caja.n,cajero:S.caja.cajero,apertura:S.caja.apertura,stats:cajaStats(S.caja)}))">🖨️ Imprimir</button></div>`)}
+function repZ(id){const z=S.cierres.find(x=>x.id===id);modal(`<div style="max-height:65vh;overflow:auto">${reportHTML('Z',z)}</div><div class="actions"><button class="btn" onclick="closeModal()">Cerrar</button><button class="btn pri" onclick="printHTML(reportHTML('Z',S.cierres.find(x=>x.id==='${id}')))">🖨️ Imprimir</button></div>`)}
+
+/* ============================================================
+   CUENTAS POR COBRAR
+   ============================================================ */
+function vCxC(){
+  const tt=S.clientes.reduce((a,c)=>a+saldo(c.id),0);
+  $('#view').innerHTML=`<div class="row sb"><h2 style="margin:0">Cuentas por cobrar (fiado)</h2><button class="btn pri" onclick="cliModal()">+ Nuevo cliente</button></div>
+  <div class="kpis" style="margin-top:12px"><div class="kpi"><div class="l">Total por cobrar</div><div class="v">${dual(tt)}</div></div><div class="kpi"><div class="l">Clientes con deuda</div><div class="v">${S.clientes.filter(c=>saldo(c.id)>0.005).length}</div></div></div>
+  <div class="card tw"><table><tr><th>Cliente</th><th>Contacto</th><th class="r">Límite</th><th class="r">Deuda (indexada a tasa del día)</th><th class="r">Disponible</th><th></th></tr>
+  ${S.clientes.filter(c=>c.id!=='CF').map(c=>{const s=saldo(c.id);const pct=c.limite?s/c.limite:0;return`<tr><td><b>${esc(c.nombre)}</b><br><small>${esc(c.rif)}</small></td><td><small>${esc(c.tel)}<br>${esc(c.email)}</small></td><td class="r">$ ${fmt(c.limite)}</td><td class="r">${dual(s)}${pct>=1?' <span class="badge b-r">Límite</span>':pct>.8?' <span class="badge b-a">80%</span>':''}</td><td class="r">$ ${fmt(Math.max(0,c.limite-s))}</td>
+  <td style="white-space:nowrap"><button class="btn sm pri" onclick="abonoModal('${c.id}')" ${s>0.005?'':'disabled'}>Abonar</button> <button class="btn sm" onclick="estadoModal('${c.id}')">Estado de cuenta</button> <button class="btn sm" onclick="cliModal('${c.id}')">Editar</button></td></tr>`}).join('')}</table></div>`;
+}
+function cliModal(id){
+  const c=id?S.clientes.find(x=>x.id===id):{nombre:'',rif:'',tel:'',email:'',limite:50};
+  modal(`<h2>${id?'Editar':'Nuevo'} cliente</h2><div class="f"><div><label>Nombre</label><input id="cn" value="${esc(c.nombre)}"></div><div><label>RIF / C.I.</label><input id="cr" value="${esc(c.rif)}"></div><div><label>Teléfono / WhatsApp</label><input id="ct" value="${esc(c.tel)}"></div><div><label>Correo</label><input id="ce" value="${esc(c.email)}"></div><div><label>Límite de crédito (USD)</label><input id="cl" type="number" value="${c.limite}"></div></div>
+  <div class="actions"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn pri" onclick="cliSave('${id||''}')">Guardar</button></div>`);
+}
+function cliSave(id){
+  if(!val('cn').trim())return toast('Falta el nombre','err');
+  const d={nombre:val('cn').trim(),rif:val('cr'),tel:val('ct'),email:val('ce'),limite:num('cl')};
+  if(id)Object.assign(S.clientes.find(x=>x.id===id),d);else S.clientes.push({id:uid(),...d});
+  save();closeModal();render();
+}
+function abonoModal(cid){
+  const c=S.clientes.find(x=>x.id===cid);
+  modal(`<h2>Abono de ${esc(c.nombre)}</h2><p>Deuda actual: ${dual(saldo(cid))}</p><div class="f"><div><label>Método</label><select id="bm" onchange="abonoEq('${cid}')">${actM().map(m=>`<option value="${m.id}">${esc(m.n)}</option>`).join('')}</select></div><div><label>Monto recibido</label><input id="bmo" type="number" step="0.01" oninput="abonoEq('${cid}')"></div></div>
+  <div id="beq" class="mut"></div><div class="actions"><button class="btn" onclick="abonoAll('${cid}')">Pagar todo</button><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn pri" onclick="abonoSave('${cid}')">Registrar abono</button></div>`);
+}
+function abonoEq(cid){const m=S.cfg.metodos.find(x=>x.id===val('bm'));const u=toUSD(num('bmo'),m.cur);$('#beq').innerHTML=`Equivale a <b>$ ${fmt(u)}</b> a la tasa de hoy (Bs ${fmt(S.cfg.tasaUSD)})`}
+function abonoAll(cid){const m=S.cfg.metodos.find(x=>x.id===val('bm'));$('#bmo').value=r2(fromUSD(saldo(cid),m.cur));abonoEq(cid)}
+function abonoSave(cid){
+  const m=S.cfg.metodos.find(x=>x.id===val('bm'));const monto=num('bmo');let u=toUSD(monto,m.cur);
+  if(!(u>0))return toast('Monto inválido','err');if(u>saldo(cid)+0.01)return toast('El abono supera la deuda','err');u=Math.min(u,saldo(cid));
+  const mov={id:uid(),cid,f:new Date().toISOString(),tipo:'abono',usd:u,tasa:S.cfg.tasaUSD,nota:`Abono ${money(monto,m.cur)} (${m.n}) @ ${fmt(S.cfg.tasaUSD)}`,ref:''};
+  S.cxc.push(mov);
+  if(S.caja)S.caja.movs.push({id:uid(),f:mov.f,tipo:'abono',cur:m.cur,monto,usd:u,ef:m.ef,nombre:m.n,concepto:'Abono CxC'});
+  save();render();reciboAbono(mov.id);
+}
+function reciboAbono(mid){
+  const m=S.cxc.find(x=>x.id===mid);const c=S.clientes.find(x=>x.id===m.cid);
+  const t=`*${S.cfg.empresa}* – Comprobante de abono\nCliente: ${c.nombre}\nFecha: ${dt(m.f)}\n${m.nota}\nMonto: $ ${fmt(m.usd)} (Bs ${fmt(m.usd*m.tasa)})\nSaldo pendiente: $ ${fmt(saldo(c.id))} (Bs ${fmt(saldo(c.id)*S.cfg.tasaUSD)} a tasa de hoy)\n¡Gracias!`;
+  window._rt=t;
+  modal(`<h2>Comprobante de abono</h2><pre style="white-space:pre-wrap;background:#f8fafc;padding:12px;border-radius:8px">${esc(t.replace(/\*/g,''))}</pre><div class="actions"><button class="btn" onclick="printHTML('<div class=tk><pre style=white-space:pre-wrap>'+esc(window._rt.replace(/\\*/g,''))+'</pre></div>')">🖨️ Imprimir</button><button class="btn" onclick="wa('${esc(c.tel)}',window._rt)">💬 WhatsApp</button><button class="btn" onclick="location.href='mailto:${esc(c.email)}?subject=Comprobante de abono&body='+encodeURIComponent(window._rt)">✉️ Correo</button><button class="btn pri" onclick="closeModal()">Cerrar</button></div>`);
+}
+function estadoText(cid){
+  const c=S.clientes.find(x=>x.id===cid);let b=0;
+  const l=S.cxc.filter(m=>m.cid===cid).map(m=>{b+=m.tipo==='cargo'?m.usd:-m.usd;return `${ymd(m.f)} ${m.tipo==='cargo'?'Cargo':'Abono'} $ ${fmt(m.usd)} · ${m.nota}`});
+  return `*${S.cfg.empresa}* – Estado de cuenta\nCliente: ${c.nombre}\n\n${l.join('\n')}\n\n*Saldo: $ ${fmt(b)} / Bs ${fmt(b*S.cfg.tasaUSD)}* (tasa ${fmt(S.cfg.tasaUSD)})\nLímite de crédito: $ ${fmt(c.limite)}`;
+}
+function estadoModal(cid){
+  const c=S.clientes.find(x=>x.id===cid);let b=0;window._et=estadoText(cid);
+  modal(`<h2>Estado de cuenta · ${esc(c.nombre)}</h2><table><tr><th>Fecha</th><th>Detalle</th><th class="r">Cargo</th><th class="r">Abono</th><th class="r">Saldo USD</th></tr>${S.cxc.filter(m=>m.cid===cid).map(m=>{b+=m.tipo==='cargo'?m.usd:-m.usd;return`<tr><td>${ymd(m.f)}</td><td>${esc(m.nota)}</td><td class="r">${m.tipo==='cargo'?fmt(m.usd):''}</td><td class="r">${m.tipo==='abono'?fmt(m.usd):''}</td><td class="r">${fmt(b)}</td></tr>`}).join('')||'<tr><td colspan=5><small>Sin movimientos</small></td></tr>'}</table>
+  <p><b>Saldo actual: ${dual(b)}</b></p><div class="actions"><button class="btn" onclick="printHTML('<div class=tk><pre style=white-space:pre-wrap>'+esc(window._et.replace(/\\*/g,''))+'</pre></div>')">🖨️ Imprimir</button><button class="btn" onclick="wa('${esc(c.tel)}',window._et)">💬 WhatsApp</button><button class="btn" onclick="location.href='mailto:${esc(c.email)}?subject=Estado de cuenta&body='+encodeURIComponent(window._et)">✉️ Correo</button><button class="btn pri" onclick="closeModal()">Cerrar</button></div>`,true);
+}
+
+/* ============================================================
+   COMPRAS Y CUENTAS POR PAGAR
+   ============================================================ */
+function vComp(){
+  const T=[['compras','Recepción de mercancía'],['cxp','Cuentas por pagar'],['prov','Proveedores']];
+  $('#view').innerHTML=`<h2>Compras y proveedores</h2><div class="tabs">${T.map(([k,n])=>`<button class="${ui.comp===k?'on':''}" onclick="ui.comp='${k}';vComp()">${n}</button>`).join('')}</div><div id="cb"></div>`;
+  ({compras:compList,cxp:cxpList,prov:provList})[ui.comp]();
+}
+const provName=id=>S.proveedores.find(p=>p.id===id)?.nombre||'—';
+function compList(){
+  $('#cb').innerHTML=`<div class="row"><button class="btn pri" onclick="compModal()">+ Recibir mercancía / factura de proveedor</button></div><div class="card tw"><table><tr><th>Fecha</th><th>Nº factura</th><th>Proveedor</th><th>Condición</th><th class="r">Total</th><th></th></tr>
+  ${S.compras.slice().reverse().map(c=>`<tr><td>${c.fecha}</td><td>${esc(c.nro)}</td><td>${esc(provName(c.prov))}</td><td>${c.cred?`Crédito · vence ${c.cred.venc}`:'Contado'}</td><td class="r">${dual(c.total)}</td><td><button class="btn sm" onclick="compView('${c.id}')">Ver</button></td></tr>`).join('')||'<tr><td colspan=6><small>Sin compras registradas.</small></td></tr>'}</table></div>`;
+}
+function compView(id){const c=S.compras.find(x=>x.id===id);modal(`<h2>Compra ${esc(c.nro)} · ${esc(provName(c.prov))}</h2><table><tr><th>Producto</th><th class="r">Cant.</th><th class="r">Costo USD</th><th class="r">Subtotal</th></tr>${c.items.map(i=>`<tr><td>${esc(i.nombre)}</td><td class="r">${i.cant}</td><td class="r">$ ${fmt(i.costo,4)}</td><td class="r">$ ${fmt(i.cant*i.costo)}</td></tr>`).join('')}</table><p><b>Total ${dual(c.total)}</b></p><div class="actions"><button class="btn pri" onclick="closeModal()">Cerrar</button></div>`)}
+let cf=null;
+function compModal(){
+  if(!S.proveedores.length)return toast('Registra un proveedor primero','err');
+  cf={rows:[{pid:S.productos[0].id,cant:1,costo:S.productos[0].costo,margen:S.productos[0].margen,upd:true,vence:''}]};
+  modal(`<h2>Recepción de mercancía</h2><div class="f"><div><label>Proveedor</label><select id="cfp">${S.proveedores.map(p=>`<option value="${p.id}">${esc(p.nombre)}</option>`).join('')}</select></div><div><label>Nº factura</label><input id="cfn"></div><div><label>Fecha</label><input id="cfd" type="date" value="${today()}"></div>
+  <div><label>Moneda de la factura</label><select id="cfm" onchange="cfRows()"><option value="USD">USD</option><option value="EUR">EUR</option><option value="VES">Bs</option></select></div>
+  <div><label>Condición</label><select id="cfc" onchange="$('#cfdias').style.display=this.value==='cred'?'':'none'"><option value="cont">Contado</option><option value="cred">Crédito</option></select></div><div id="cfdias" style="display:none"><label>Días de crédito</label><input id="cfdd" type="number" value="15"></div></div>
+  <div class="tw" style="max-height:45vh"><table><thead><tr><th>Producto</th><th>Cant. (unid. base)</th><th>Costo unit.</th><th>Margen %</th><th>PVP sugerido</th><th>Vence</th><th>Actualizar precio</th><th></th></tr></thead><tbody id="cfr"></tbody></table></div>
+  <div class="row sb"><button class="btn" onclick="cf.rows.push({pid:S.productos[0].id,cant:1,costo:S.productos[0].costo,margen:S.productos[0].margen,upd:true,vence:''});cfRows()">+ Línea</button><b id="cft"></b></div>
+  <div class="actions"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn pri" onclick="cfSave()">Recibir y actualizar inventario</button></div>`,true);
+  cfRows();
+}
+function cfRows(){
+  $('#cfr').innerHTML=cf.rows.map((r,i)=>`<tr><td><select onchange="cfPid(${i},this.value)">${S.productos.map(p=>`<option value="${p.id}" ${r.pid===p.id?'selected':''}>${esc(p.nombre)}</option>`).join('')}</select></td>
+   <td><input type="number" step="0.001" style="width:80px" value="${r.cant}" oninput="cfSet(${i},'cant',this.value)"></td><td><input type="number" step="0.0001" style="width:90px" value="${r.costo}" oninput="cfSet(${i},'costo',this.value)"></td>
+   <td><input type="number" step="0.1" style="width:70px" value="${r.margen}" oninput="cfSet(${i},'margen',this.value)"></td><td id="cfv${i}"></td><td><input type="date" value="${r.vence}" onchange="cf.rows[${i}].vence=this.value"></td>
+   <td><input type="checkbox" ${r.upd?'checked':''} onchange="cf.rows[${i}].upd=this.checked"></td><td><button class="btn sm" onclick="cf.rows.splice(${i},1);cfRows()">✕</button></td></tr>`).join('');
+  cf.rows.forEach((_,i)=>cfCell(i));cfTot();
+}
+function cfPid(i,pid){const p=prod(pid);Object.assign(cf.rows[i],{pid,costo:fromUSD(p.costo,val('cfm')),margen:p.margen});cfRows()}
+function cfSet(i,k,v){cf.rows[i][k]=parseFloat(v)||0;cfCell(i);cfTot()}
+function cfCell(i){const r=cf.rows[i],p=prod(r.pid);const cu=r.costo*rate(val('cfm'));const pr=cu*(1+r.margen/100);const el=$('#cfv'+i);if(el)el.innerHTML=dual(pr*(1+ivaRate(p)))+`<br><small>costo ant. $ ${fmt(p.costo)}</small>`}
+function cfTot(){const m=val('cfm');const t=cf.rows.reduce((a,r)=>a+r.cant*r.costo,0);$('#cft').textContent='Total factura: '+money(t,m)+' · $ '+fmt(toUSD(t,m))}
+function cfSave(){
+  const rows=cf.rows.filter(r=>r.cant>0);if(!rows.length)return toast('Agrega al menos una línea','err');
+  const mon=val('cfm');const nro=val('cfn').trim()||('C-'+(++S.cfg.nroCompra));const fecha=val('cfd')||today();const items=[];let total=0;const id=uid();
+  rows.forEach(r=>{const p=prod(r.pid);const cu=Math.round(r.costo*rate(mon)*10000)/10000;total+=cu*r.cant;items.push({pid:p.id,nombre:p.nombre,cant:r.cant,costo:cu});
+    mover(p.id,'ENTRADA',r.cant,'ALM','Compra '+nro+' · '+provName(val('cfp')),nro);p.costo=cu;if(r.upd){p.margen=r.margen;p.precio=r2(cu*(1+r.margen/100))}if(r.vence)p.vence=r.vence});
+  const c={id,prov:val('cfp'),nro,fecha,items,total,mon,cred:null};
+  if(val('cfc')==='cred')c.cred={monto:total,pagado:0,venc:addDays(fecha,parseInt(val('cfdd'))||15),pagos:[]};
+  S.compras.push(c);save();closeModal();toast('Mercancía recibida y stock actualizado','ok');render();
+}
+function cxpList(){
+  const L=S.compras.filter(c=>c.cred);const tt=L.reduce((a,c)=>a+c.cred.monto-c.cred.pagado,0);
+  $('#cb').innerHTML=`<div class="kpis"><div class="kpi"><div class="l">Total por pagar</div><div class="v">${dual(tt)}</div></div></div><div class="card tw"><table><tr><th>Proveedor</th><th>Factura</th><th>Vence</th><th class="r">Monto</th><th class="r">Pagado</th><th class="r">Saldo</th><th>Estado</th><th></th></tr>
+  ${L.map(c=>{const s=c.cred.monto-c.cred.pagado;const d=daysTo(c.cred.venc);return`<tr><td>${esc(provName(c.prov))}</td><td>${esc(c.nro)}</td><td>${c.cred.venc}</td><td class="r">$ ${fmt(c.cred.monto)}</td><td class="r">$ ${fmt(c.cred.pagado)}</td><td class="r">${dual(s)}</td><td>${s<0.005?'<span class="badge b-g">Pagada</span>':d<0?'<span class="badge b-r">Vencida</span>':d<=7?`<span class="badge b-a">Vence en ${d}d</span>`:'<span class="badge b-b">Vigente</span>'}</td><td>${s>0.005?`<button class="btn sm pri" onclick="pagoModal('${c.id}')">Pagar</button>`:''}</td></tr>`}).join('')||'<tr><td colspan=8><small>Sin compromisos a crédito.</small></td></tr>'}</table></div>`;
+}
+function pagoModal(id){
+  const c=S.compras.find(x=>x.id===id);
+  modal(`<h2>Pago a ${esc(provName(c.prov))}</h2><p>Saldo: ${dual(c.cred.monto-c.cred.pagado)}</p><div class="f"><div><label>Método</label><select id="gm">${actM().map(m=>`<option value="${m.id}">${esc(m.n)}</option>`).join('')}</select></div><div><label>Monto</label><input id="gmo" type="number" step="0.01"></div></div>
+  <div class="actions"><button class="btn" onclick="$('#gmo').value=r2(fromUSD(${c.cred.monto-c.cred.pagado},S.cfg.metodos.find(x=>x.id===val('gm')).cur))">Pagar todo</button><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn pri" onclick="pagoSave('${id}')">Registrar pago</button></div>`);
+}
+function pagoSave(id){
+  const c=S.compras.find(x=>x.id===id);const m=S.cfg.metodos.find(x=>x.id===val('gm'));const monto=num('gmo');let u=toUSD(monto,m.cur);
+  if(!(u>0))return toast('Monto inválido','err');u=Math.min(u,c.cred.monto-c.cred.pagado);c.cred.pagado+=u;c.cred.pagos.push({f:new Date().toISOString(),usd:u,metodo:m.n});
+  if(S.caja&&m.ef)S.caja.movs.push({id:uid(),f:new Date().toISOString(),tipo:'egreso',cur:m.cur,monto,usd:toUSD(monto,m.cur),concepto:'Pago proveedor '+provName(c.prov)+' · '+c.nro});
+  save();closeModal();toast('Pago registrado','ok');render();
+}
+function provList(){
+  $('#cb').innerHTML=`<div class="row"><button class="btn pri" onclick="provModal()">+ Proveedor</button></div><div class="card"><table><tr><th>Proveedor</th><th>RIF</th><th>Teléfono</th><th class="r">Saldo por pagar</th><th></th></tr>${S.proveedores.map(p=>{const s=S.compras.filter(c=>c.prov===p.id&&c.cred).reduce((a,c)=>a+c.cred.monto-c.cred.pagado,0);return`<tr><td>${esc(p.nombre)}</td><td>${esc(p.rif)}</td><td>${esc(p.tel)}</td><td class="r">${dual(s)}</td><td><button class="btn sm" onclick="provModal('${p.id}')">Editar</button></td></tr>`}).join('')}</table></div>`;
+}
+function provModal(id){
+  const p=id?S.proveedores.find(x=>x.id===id):{nombre:'',rif:'',tel:''};
+  modal(`<h2>${id?'Editar':'Nuevo'} proveedor</h2><div class="f"><div><label>Nombre</label><input id="vn" value="${esc(p.nombre)}"></div><div><label>RIF</label><input id="vr" value="${esc(p.rif)}"></div><div><label>Teléfono</label><input id="vt" value="${esc(p.tel)}"></div></div>
+  <div class="actions"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn pri" onclick="provSave('${id||''}')">Guardar</button></div>`);
+}
+function provSave(id){if(!val('vn').trim())return;const d={nombre:val('vn').trim(),rif:val('vr'),tel:val('vt')};if(id)Object.assign(S.proveedores.find(x=>x.id===id),d);else S.proveedores.push({id:uid(),...d});save();closeModal();render()}
+
+/* ============================================================
+   REPORTES
+   ============================================================ */
+function vRep(){
+  if(!ui.repTo)ui.repTo=today();if(!ui.repFrom)ui.repFrom=addDays(today(),-6);
+  const vs=S.ventas.filter(v=>!v.anulada&&ymd(v.f)>=ui.repFrom&&ymd(v.f)<=ui.repTo);
+  const T=vs.reduce((a,v)=>a+v.totalUSD,0),UH=vs.reduce((a,v)=>a+utilidad(v,false),0),UR=vs.reduce((a,v)=>a+utilidad(v,true),0);
+  // pagos
+  const pm={};vs.forEach(v=>v.pagos.forEach(p=>{pm[p.nombre]=pm[p.nombre]||{nombre:p.nombre,cur:p.cur,n:0,monto:0,usd:0};pm[p.nombre].n++;pm[p.nombre].monto+=p.monto;pm[p.nombre].usd+=p.usd}));
+  const cr=vs.reduce((a,v)=>a+(v.credito||0),0);
+  // abc
+  const ag={};S.productos.forEach(p=>ag[p.id]={p,u:0,r:0});
+  vs.forEach(v=>v.items.forEach(i=>{const a=ag[i.pid];if(a){a.u+=i.cant*i.f;a.r+=i.base}}));
+  const list=Object.values(ag).sort((a,b)=>b.r-a.r);const rt=list.reduce((a,x)=>a+x.r,0)||1;let cum=0;
+  list.forEach(x=>{cum+=x.r;x.cum=cum/rt;x.cls=x.r===0?'C':(x.cum-x.r/rt)<0.8?'A':(x.cum-x.r/rt)<0.95?'B':'C'});
+  const vend=list.filter(x=>x.u>0);const menos=Object.values(ag).sort((a,b)=>a.u-b.u).slice(0,8);
+  // barras
+  const days=[];for(let i=6;i>=0;i--)days.push(addDays(ui.repTo,-i));
+  const dv=days.map(d=>S.ventas.filter(v=>!v.anulada&&ymd(v.f)===d).reduce((a,v)=>a+v.totalUSD,0));const mx=Math.max(...dv,1);
+  window._pmRows=Object.values(pm);window._abc=list;
+  $('#view').innerHTML=`<div class="row sb"><h2 style="margin:0">Reportes y analítica</h2><div class="row"><label style="margin:0">Desde</label><input type="date" value="${ui.repFrom}" onchange="ui.repFrom=this.value;vRep()"><label style="margin:0">Hasta</label><input type="date" value="${ui.repTo}" onchange="ui.repTo=this.value;vRep()"></div></div>
+  <div class="kpis" style="margin-top:12px"><div class="kpi"><div class="l">Ventas (${vs.length} facturas)</div><div class="v">${dual(T)}</div><div class="s">Ticket promedio ${money(fromUSD(vs.length?T/vs.length:0,S.cfg.ref),S.cfg.ref)}</div></div>
+   <div class="kpi"><div class="l">Ganancia real (costo de reposición)</div><div class="v">${dual(UR)}</div><div class="s">Margen ${fmt(T?UR/T*100:0,1)}% · valorada en divisa</div></div>
+   <div class="kpi"><div class="l">Ganancia histórica (costo de venta)</div><div class="v">${dual(UH)}</div><div class="s">Diferencia por reposición: ${money(fromUSD(UH-UR,S.cfg.ref),S.cfg.ref)}</div></div>
+   <div class="kpi"><div class="l">IVA / IGTF cobrados</div><div class="v">$ ${fmt(vs.reduce((a,v)=>a+v.ivaUSD,0))}</div><div class="s">IGTF $ ${fmt(vs.reduce((a,v)=>a+v.igtfUSD,0))} · Fiado $ ${fmt(cr)}</div></div></div>
+  <div class="card"><h3>Ventas diarias (USD)</h3><div class="bars">${dv.map((x,i)=>`<div><small>${fmt(x,0)}</small><i style="height:${x/mx*110}px"></i>${days[i].slice(5)}</div>`).join('')}</div></div>
+  <div class="card"><div class="row sb"><h3 style="margin:0">Consolidado por formas de pago</h3><button class="btn sm" onclick="dl('formas-pago.csv',csv([['Forma','Operaciones','Monto','Moneda','USD'],..._pmRows.map(p=>[p.nombre,p.n,p.monto.toFixed(2),p.cur,p.usd.toFixed(2)])]),'text/csv')">⬇ CSV</button></div>${pmTable(Object.values(pm))}</div>
+  <div class="pos" style="grid-template-columns:2fr 1fr"><div class="card tw"><div class="row sb"><h3 style="margin:0">Análisis ABC de productos</h3><button class="btn sm" onclick="dl('abc.csv',csv([['Producto','Unidades','Ventas USD','% acum.','Clase'],..._abc.map(x=>[x.p.nombre,x.u,x.r.toFixed(2),(x.cum*100).toFixed(1),x.cls])]),'text/csv')">⬇ CSV</button></div>
+  <table><tr><th>Producto</th><th class="r">Unid.</th><th class="r">Ventas</th><th class="r">% acum.</th><th>Clase</th></tr>${list.map(x=>`<tr><td>${esc(x.p.nombre)}</td><td class="r">${r3(x.u)}</td><td class="r">$ ${fmt(x.r)}</td><td class="r">${fmt(x.cum*100,0)}%</td><td><span class="badge ${x.cls==='A'?'b-g':x.cls==='B'?'b-b':'b-n'}">${x.cls}</span></td></tr>`).join('')}</table></div>
+  <div><div class="card"><h3>🏆 Más vendidos</h3>${vend.slice(0,5).map(x=>`<div class="tl"><span>${esc(x.p.nombre)}</span><b>${r3(x.u)}</b></div>`).join('')||'<small>Sin ventas</small>'}</div><div class="card"><h3>🐌 Menos vendidos / sin rotación</h3>${menos.map(x=>`<div class="tl"><span>${esc(x.p.nombre)}</span><b>${r3(x.u)}</b></div>`).join('')}</div></div></div>
+  <div class="card tw"><h3>Historial de facturas</h3><table><tr><th>Nº</th><th>Fecha</th><th>Cliente</th><th class="r">Total</th><th>Pagos</th><th></th></tr>${S.ventas.filter(v=>ymd(v.f)>=ui.repFrom&&ymd(v.f)<=ui.repTo).slice().reverse().slice(0,60).map(v=>`<tr style="${v.anulada?'opacity:.5':''}"><td>${v.nro} ${v.anulada?'<span class="badge b-r">Anulada</span>':''}</td><td>${dt(v.f)}</td><td>${esc(S.clientes.find(c=>c.id===v.cid)?.nombre||'')}</td><td class="r">${dual(v.totalUSD)}</td><td><small>${v.pagos.map(p=>esc(p.nombre)).join(' + ')}${v.credito?' + Fiado':''}</small></td><td style="white-space:nowrap"><button class="btn sm" onclick="showTicket('${v.id}')">Ver</button> ${v.anulada?'':`<button class="btn sm" onclick="anular('${v.id}')">Anular</button>`}</td></tr>`).join('')||'<tr><td colspan=6><small>Sin facturas en el rango.</small></td></tr>'}</table></div>`;
+}
+function anular(id){
+  const v=S.ventas.find(x=>x.id===id);if(!confirm('¿Anular factura '+v.nro+'? Se devolverá el stock y se revertirá el crédito.'))return;
+  v.anulada=true;v.items.forEach(i=>mover(i.pid,'ENTRADA',i.cant*i.f,'EXH','Anulación factura '+v.nro,'Anul '+v.nro));
+  S.cxc=S.cxc.filter(m=>m.ref!==v.id);save();toast('Factura anulada','ok');render();
+}
+
+/* ============================================================
+   CATÁLOGO DIGITAL
+   ============================================================ */
+const EMO={'Víveres':'🌾','Bebidas':'🥤','Higiene':'🧼','Charcutería':'🧀','Lácteos':'🥛','Limpieza':'🧽'};
+function vCat(){
+  const pub=location.hash==='#catalogo';const cats=[...new Set(S.productos.map(p=>p.cat))];
+  $('#view').innerHTML=`<div class="cat-head"><div class="row sb"><div><h2 style="margin:0">${esc(S.cfg.empresa)}</h2><div>Catálogo digital · precios y disponibilidad en tiempo real · Tasa BCV Bs ${fmt(S.cfg.tasaUSD)}</div></div>
+   <div class="row"><button class="btn" onclick="navigator.clipboard&&navigator.clipboard.writeText(location.origin+location.pathname+'#catalogo');toast('Enlace del catálogo copiado','ok')">🔗 Copiar enlace</button>${location.hash==='#catalogo'?'<button class="btn" onclick="go(\'dash\')">← Volver al sistema</button>':''}</div></div></div>
+   <div class="row"><input id="cq" placeholder="Buscar producto…" value="${esc(ui.catq)}" style="flex:1;min-width:200px"></div>
+   <div class="chips"><button class="${!ui.catc?'on':''}" onclick="ui.catc='';vCat()">Todos</button>${cats.map(c=>`<button class="${ui.catc===c?'on':''}" onclick="ui.catc='${esc(c)}';vCat()">${EMO[c]||'📦'} ${esc(c)}</button>`).join('')}</div>
+   <div class="grid" id="cg" style="grid-template-columns:repeat(auto-fill,minmax(190px,1fr))"></div><div id="cbar"></div>`;
+  $('#cq').oninput=e=>{ui.catq=e.target.value;catGrid()};catGrid();catBar();
+}
+function catGrid(){
+  const q=ui.catq.toLowerCase();
+  $('#cg').innerHTML=S.productos.filter(p=>(!ui.catc||p.cat===ui.catc)&&(!q||p.nombre.toLowerCase().includes(q))).map(p=>{
+    const t=tot(p),q=ui.catCart[p.id]||0;
+    return`<div class="pc" style="cursor:default"><div style="font-size:42px;text-align:center">${EMO[p.cat]||'📦'}</div><div class="n">${esc(p.nombre)}</div><div class="p">${money(fromUSD(pvp(p),S.cfg.ref),S.cfg.ref)} <small>/ ${p.unidad}</small></div><small>Bs ${fmt(fromUSD(pvp(p),'VES'))}</small><br>
+    ${t<=0?'<span class="badge b-r">Agotado</span>':t<=p.min?'<span class="badge b-a">Pocas unidades</span>':'<span class="badge b-g">Disponible</span>'}
+    <div class="row" style="margin:8px 0 0">${q?`<button class="btn sm" onclick="catQty('${p.id}',-1)">−</button><b>${q}</b>`:''}<button class="btn sm pri" ${t<=0?'disabled':''} onclick="catQty('${p.id}',1)">${q?'+':'Agregar'}</button></div></div>`}).join('')||'<small>Sin resultados.</small>';
+}
+function catQty(pid,d){const p=prod(pid);const st=p.frac?0.5:1;let q=(ui.catCart[pid]||0)+d*st;if(q>tot(p)){toast('No hay más disponibilidad','err');q=tot(p)}if(q<=0)delete ui.catCart[pid];else ui.catCart[pid]=q;catGrid();catBar()}
+function catTotal(){return Object.entries(ui.catCart).reduce((a,[id,q])=>a+pvp(prod(id))*q,0)}
+function catBar(){
+  const n=Object.keys(ui.catCart).length;const b=$('#cbar');if(!b)return;
+  b.innerHTML=n?`<div class="catbar"><div>🛒 ${n} producto(s) · <b>${dualT(catTotal())}</b></div><button class="btn pri" onclick="catCheckout()">Ver pedido y enviar</button></div>`:'';
+}
+function catCheckout(){
+  modal(`<h2>Tu pedido</h2><table>${Object.entries(ui.catCart).map(([id,q])=>{const p=prod(id);return`<tr><td>${esc(p.nombre)}</td><td class="r">${q} ${p.unidad}</td><td class="r">${money(fromUSD(pvp(p)*q,S.cfg.ref),S.cfg.ref)}</td></tr>`}).join('')}</table>
+  <p><b>Total: ${dualT(catTotal())}</b></p><div class="f"><div><label>Tu nombre</label><input id="on"></div><div><label>Tu teléfono</label><input id="ot"></div><div><label>Entrega</label><select id="oe"><option value="Retiro en tienda (pick up)">Retiro en tienda (pick up)</option><option value="Despacho / delivery">Despacho / delivery</option></select></div><div style="grid-column:1/-1"><label>Dirección / notas</label><textarea id="oo" rows="2"></textarea></div></div>
+  <div class="actions"><button class="btn" onclick="closeModal()">Seguir comprando</button><button class="btn pri" onclick="catSend()">💬 Enviar pedido por WhatsApp</button></div>`);
+}
+function catSend(){
+  if(!val('on').trim()||!val('ot').trim())return toast('Indica tu nombre y teléfono','err');
+  const items=Object.entries(ui.catCart).map(([id,q])=>{const p=prod(id);return{pid:id,nombre:p.nombre,cant:q,pvp:pvp(p)}});const total=catTotal();
+  const ped={id:uid(),nro:++S.cfg.nroPedido,f:new Date().toISOString(),cliente:val('on'),tel:val('ot'),entrega:val('oe'),notas:val('oo'),items,total,estado:'nuevo'};
+  S.pedidos.push(ped);save();
+  const t=`*Nuevo pedido #${ped.nro}* – ${S.cfg.empresa}\nCliente: ${ped.cliente} (${ped.tel})\nEntrega: ${ped.entrega}\n${ped.notas?'Notas: '+ped.notas+'\n':''}\n`+items.map(i=>`• ${i.cant} x ${i.nombre} — $ ${fmt(i.pvp*i.cant)}`).join('\n')+`\n\n*Total: $ ${fmt(total)} / Bs ${fmt(total*S.cfg.tasaUSD)}* (tasa BCV ${fmt(S.cfg.tasaUSD)})`;
+  ui.catCart={};closeModal();wa(S.cfg.whatsapp,t);toast('Pedido enviado y registrado','ok');vCat();
+}
+function vPed(){
+  $('#view').innerHTML=`<h2>Pedidos en línea</h2><div class="card tw"><table><tr><th>#</th><th>Fecha</th><th>Cliente</th><th>Entrega</th><th>Productos</th><th class="r">Total</th><th>Estado</th><th></th></tr>
+  ${S.pedidos.slice().reverse().map(p=>`<tr><td>${p.nro}</td><td>${dt(p.f)}</td><td>${esc(p.cliente)}<br><small>${esc(p.tel)}</small></td><td><small>${esc(p.entrega)}<br>${esc(p.notas)}</small></td><td><small>${p.items.map(i=>`${i.cant} ${esc(i.nombre)}`).join('<br>')}</small></td><td class="r">${dual(p.total)}</td>
+  <td><select onchange="S.pedidos.find(x=>x.id==='${p.id}').estado=this.value;save();render()">${['nuevo','preparando','listo','entregado','cancelado'].map(e=>`<option ${p.estado===e?'selected':''}>${e}</option>`).join('')}</select></td><td style="white-space:nowrap"><button class="btn sm pri" onclick="pedPOS('${p.id}')">Cargar al POS</button> <button class="btn sm" onclick="wa('${esc(p.tel)}','Hola ${esc(p.cliente)}, tu pedido #${p.nro} está: ${p.estado}. ${esc(S.cfg.empresa)}')">💬</button></td></tr>`).join('')||'<tr><td colspan=8><small>Aún no hay pedidos. Comparte el enlace del catálogo.</small></td></tr>'}</table></div>`;
+}
+function pedPOS(id){
+  const p=S.pedidos.find(x=>x.id===id);let sk=[];
+  p.items.forEach(i=>{const pr=prod(i.pid);if(!pr)return;const q=Math.min(i.cant,tot(pr));if(q<i.cant)sk.push(pr.nombre);if(q>0){const l=S.cart.find(x=>x.pid===i.pid&&x.pi===-1);if(l)l.cant+=q;else S.cart.push({pid:i.pid,pi:-1,cant:q})}});
+  save();if(sk.length)toast('Stock insuficiente en: '+sk.join(', '),'err');go('pos');
+}
+
+/* ============================================================
+   CONFIGURACIÓN
+   ============================================================ */
+function vCfg(){
+  const c=S.cfg;
+  $('#view').innerHTML=`<h2>Configuración</h2>
+  <div class="card"><h3>Tasa de cambio (BCV)</h3><div class="f"><div><label>Bs por USD</label><input id="tu" type="number" step="0.0001" value="${c.tasaUSD}"></div><div><label>Bs por EUR</label><input id="te" type="number" step="0.0001" value="${c.tasaEUR}"></div></div>
+  <div class="row"><button class="btn pri" onclick="if(num('tu')>0&&num('te')>0){setTasa(num('tu'),num('te'),'Manual');toast('Tasa actualizada: precios recalculados','ok')}">Guardar tasa manual</button><button class="btn" onclick="syncBCV()">⟳ Sincronizar con BCV</button></div>
+  <small>Los precios se guardan en USD; al cambiar la tasa todo se recalcula en Bs automáticamente. La sincronización automática se intenta al abrir la app (requiere internet).</small></div>
+  <div class="card"><h3>Empresa e impuestos</h3><div class="f"><div><label>Razón social</label><input id="ce1" value="${esc(c.empresa)}"></div><div><label>RIF</label><input id="ce2" value="${esc(c.rif)}"></div><div><label>Dirección</label><input id="ce3" value="${esc(c.dir)}"></div><div><label>Teléfono</label><input id="ce4" value="${esc(c.tel)}"></div>
+  <div><label>WhatsApp de pedidos (con código país)</label><input id="ce5" value="${esc(c.whatsapp)}"></div><div><label>IVA general %</label><input id="ce6" type="number" value="${c.iva}"></div><div><label>IGTF % (pagos en divisas)</label><input id="ce7" type="number" step="0.1" value="${c.igtf}"></div>
+  <div><label>Modo de facturación</label><select id="ce8"><option value="termica" ${c.impresion==='termica'?'selected':''}>Ticket térmico / PDF / WhatsApp</option><option value="fiscal" ${c.impresion==='fiscal'?'selected':''}>Impresora fiscal homologada SENIAT</option></select></div></div>
+  <button class="btn pri" onclick="cfgSave()">Guardar</button></div>
+  <div class="card"><h3>Métodos de pago · ajustes y exenciones</h3><small>Ajuste %: negativo = descuento (ej. −10% por pagar en divisa efectivo), positivo = recargo. IGTF aplica a pagos en divisas.</small>
+  <table><tr><th>Método</th><th>Moneda</th><th>Efectivo</th><th>IGTF</th><th>Ajuste %</th><th>Activo</th></tr>${c.metodos.map((m,i)=>`<tr><td>${esc(m.n)}</td><td>${m.cur}</td><td><input type="checkbox" ${m.ef?'checked':''} onchange="S.cfg.metodos[${i}].ef=this.checked;save()"></td><td><input type="checkbox" ${m.igtf?'checked':''} onchange="S.cfg.metodos[${i}].igtf=this.checked;save()"></td><td><input type="number" step="0.5" style="width:80px" value="${m.aj}" onchange="S.cfg.metodos[${i}].aj=parseFloat(this.value)||0;save()"></td><td><input type="checkbox" ${m.on?'checked':''} onchange="S.cfg.metodos[${i}].on=this.checked;save()"></td></tr>`).join('')}</table></div>
+  <div class="card"><h3>Datos y respaldo</h3><p class="mut">Todo se guarda en este dispositivo (LocalStorage) y funciona sin internet. Haz respaldos periódicos.</p>
+  <div class="row"><button class="btn" onclick="dl('bodegapro-respaldo-'+today()+'.json',JSON.stringify(S),'application/json')">⬇ Exportar respaldo</button><label class="btn" style="margin:0">⬆ Importar respaldo<input type="file" accept=".json" hidden onchange="impData(this)"></label><button class="btn red" onclick="if(confirm('¿Borrar TODOS los datos y volver a los datos de ejemplo?')){localStorage.removeItem(LS);load();location.hash='dash';render()}">Reiniciar con datos demo</button></div></div>`;
+}
+function cfgSave(){Object.assign(S.cfg,{empresa:val('ce1'),rif:val('ce2'),dir:val('ce3'),tel:val('ce4'),whatsapp:val('ce5'),iva:num('ce6'),igtf:num('ce7'),impresion:val('ce8')});save();toast('Configuración guardada','ok');render()}
+function impData(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.cfg||!d.productos)throw 0;S=d;save();toast('Respaldo importado','ok');render()}catch(e){toast('Archivo inválido','err')}};r.readAsText(f)}
+
+/* ---------- arranque ---------- */
+load();
+window.addEventListener('online',render);window.addEventListener('offline',render);
+render();
+if(navigator.onLine&&(!S.cfg.tasaFecha||Date.now()-new Date(S.cfg.tasaFecha)>6*36e5))syncBCV(true);
+setTimeout(notifyAlerts,2000);
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('/sw.js').catch(()=>{});
+</script>
+</body>
+</html>
